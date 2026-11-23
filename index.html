@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PIXEL GAMING</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
+body{background:#0A0A0A;color:#fff;padding-bottom:0}
+header{position:sticky;top:0;background:#111111;padding:10px 12px;display:flex;gap:8px;align-items:center;z-index:99;border-bottom:1px solid #FACC1533}
+.logo{display:flex;align-items:center;gap:8px;font-weight:900;font-style:italic;color:#FACC15;text-shadow:0 0 12px #FACC1588;flex:1;animation:none !important;transform:none !important}
+.logo .logo-text{display:flex;flex-direction:row;gap:5px;align-items:center;line-height:1}
+.logo .logo-text span{font-size:13px;color:#FFF;display:block;letter-spacing:1px;font-style:normal}
+.icon-btn{width:42px;height:42px;border-radius:50%;background:transparent;border:1px solid rgba(255,255,255,.22);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.icon-btn svg{width:20px;height:20px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round}
+.lang-pill{display:flex;align-items:center;gap:6px;border:1px solid rgba(255,255,255,.22);border-radius:20px;padding:9px 10px;font-size:13px;font-weight:700;white-space:nowrap;flex-shrink:0}
+.lang-pill .flag{width:22px;height:22px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;font-size:16px;line-height:1}
+.search-bar{display:none;background:#111111;padding:0 12px 12px;border-bottom:1px solid #FACC1533}
+.search-bar input{width:100%;background:#0A0A0A;border:1px solid #262626;border-radius:20px;padding:11px 14px;color:#fff;font-size:14px}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:400}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:78%;max-width:300px;background:#0A0A0A;z-index:401;transform:translateX(100%);transition:transform .3s ease;padding:16px;border-left:1px solid #FACC1555}
+.drawer.open{transform:translateX(0)}
+.drawer-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px dashed #FACC1555}
+.drawer a{display:flex;justify-content:space-between;align-items:center;padding:15px 4px;border-bottom:1px solid #111111;color:#fff;text-decoration:none;font-size:15px}
+.drawer a span{opacity:.6}
+.slider{margin:14px;border-radius:16px;overflow:hidden;position:relative}
+.slides{display:flex;transition:transform .5s ease}
+.slide{min-width:100%;height:130px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:center;padding:22px 18px}
+.slide img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.slide::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,10,.92),rgba(10,10,10,.35));z-index:1}
+.slide h2,.slide p{position:relative;z-index:2}
+.slide h2{font-size:22px;line-height:1.2}
+.slide p{font-size:13px;margin-top:6px;opacity:.9}
+.dots{text-align:center;margin-top:6px}
+.dots span{display:inline-block;width:8px;height:8px;background:#fff;opacity:.4;border-radius:50%;margin:0 3px}
+.dots span.on{opacity:1;background:#FACC15;width:22px;border-radius:10px}
+.populer{padding:6px 14px 12px}
+.populer h3{font-size:19px}
+.populer p{font-size:12px;opacity:.8;margin-top:3px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:0 14px 12px}
+.tabs button{border:1px solid #262626;background:#1A1A1A;color:#fff;padding:8px 14px;border-radius:20px;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:#FACC15;color:#000;font-weight:900}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 14px;padding-bottom:20px}
+.card{position:relative;overflow:hidden;background:linear-gradient(135deg, rgba(250,204,21,.22) 0%, rgba(250,204,21,0) 40%),repeating-linear-gradient(115deg, rgba(250,204,21,.12) 0px, rgba(250,204,21,.12) 2px, transparent 2px, transparent 12px),linear-gradient(135deg,#262626 0%,#1A1A1A 55%,#0A0A0A 100%);border:1px solid #FACC15;border-radius:12px;padding:8px;display:flex;gap:10px;align-items:center;cursor:pointer;min-height:68px}
+.card::before{content:"";position:absolute;top:-50%;left:-30%;width:50%;height:200%;background:linear-gradient(100deg, transparent, rgba(250,204,21,.30), transparent);transform:rotate(15deg);pointer-events:none}
+.card .img{width:56px;height:64px;border-radius:10px;overflow:hidden;flex-shrink:0;background:#000;position:relative;z-index:1}
+.card .img img{width:100%;height:100%;object-fit:cover}
+.card b{font-size:13px;line-height:1.2;display:block;position:relative;z-index:1}
+.card small{opacity:.85;font-size:11px;line-height:1.2;display:block;margin-top:2px;position:relative;z-index:1;color:#FDE68A}
+.grid-all{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;padding:0 14px;padding-bottom:20px}
+.card-big{background:#1A1A1A;border:1px solid #FACC15;border-radius:14px;overflow:hidden;cursor:pointer;text-align:center;padding-bottom:10px}
+.card-big .img-big{width:100%;aspect-ratio:1/1;overflow:hidden;background:#000}
+.card-big .img-big img{width:100%;height:100%;object-fit:cover}
+.card-big b{font-size:12px;line-height:1.3;display:block;margin-top:8px;padding:0 6px}
+.card-big small{font-size:10px;opacity:.8;display:block;margin-top:2px;padding:0 6px;color:#FDE68A}
+.img-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(135deg,#FACC15,#1A1A1A);line-height:1}
+.img-big-emoji{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:64px;background:linear-gradient(135deg,#FACC15,#1A1A1A);line-height:1}
+@media (min-width:1024px){
+header{max-width:1100px;margin:0 auto;padding:18px 0}
+header .logo img{width:72px !important;height:72px !important;border-radius:14px}
+header .logo .logo-text span{font-size:18px !important;letter-spacing:1.5px}
+.icon-btn{width:50px;height:50px}
+.lang-pill{padding:12px 16px;font-size:15px}
+.search-bar{max-width:1100px;margin:0 auto;padding:0 0 12px}
+.slider{max-width:1100px;margin:14px auto}
+.slide{height:280px;padding:32px 40px}
+.slide h2{font-size:38px;line-height:1.1}
+.slide p{font-size:16px;margin-top:10px}
+.dots{max-width:1100px;margin:6px auto 0}
+.populer{max-width:1100px;margin:0 auto;padding:10px 0 14px}
+.populer h3{font-size:28px}
+.populer p{font-size:14px}
+.tabs{max-width:1100px;margin:0 auto;padding:0 0 12px}
+.grid{max-width:1100px;margin:0 auto;padding:0 0 20px}
+.grid-all{max-width:1100px;margin:0 auto;padding:0 0 20px}
+.footer{max-width:1100px;margin:14px auto !important}
+.box{max-width:1100px;margin:20px auto}
+#bottomBar{max-width:1100px;left:0;right:0;margin:0 auto}
+}
+.card{position:relative !important;overflow:hidden !important;padding-bottom:32px !important}
+.rating-gogo{position:absolute;top:6px;left:6px;z-index:5;background:rgba(0,0,0,.6);padding:2px 6px;border-radius:10px;color:#fff;font-size:11px;font-weight:800}
+.terjual-gogo{position:absolute;left:0 !important;right:0 !important;bottom:0 !important;top:auto !important;z-index:5;height:32px !important;line-height:32px !important;text-align:left !important;background:linear-gradient(90deg,#FACC15,#FDE68A) !important;color:#000 !important;font-size:12px !important;font-weight:800 !important;padding:0 12px !important;border-radius:0 0 12px 12px !important;white-space:nowrap}
+</style></head><style>
+.footer{margin:14px;background:#111111;border:1px solid #262626;border-radius:16px;overflow:hidden}
+.footer-banner{position:relative;height:110px;overflow:hidden}
+.footer-banner img{width:100%;height:100%;object-fit:cover}
+.footer-banner::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,10,10,.85),rgba(10,10,10,.2))}
+.footer-banner-text{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10px}
+.footer-banner-text b{font-size:19px;line-height:1.2;background:linear-gradient(90deg,#FACC15,#EAB308);padding:6px 14px;border-radius:8px;transform:rotate(-1deg);color:#000}
+.footer-banner-text span{font-size:12px;margin-top:8px;background:#fff;color:#0A0A0A;font-weight:900;padding:4px 12px;border-radius:20px;letter-spacing:1px}
+.footer-body{padding:20px 18px 14px}
+.footer-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;font-size:18px;font-weight:900;font-style:italic;color:#FACC15;line-height:1;white-space:nowrap;text-align:center;width:100%}
+.footer-logo span{color:#FFF;display:block;text-align:center;width:100%}
+.footer-desc{font-size:12px;line-height:1.6;opacity:.85;margin-top:14px;text-align:center}
+.footer-sosmed{display:flex;gap:10px;margin-top:14px;justify-content:center}
+.footer-sosmed a{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;text-decoration:none;background:#1A1A1A;border:1px solid #262626}
+.footer-links{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:20px}
+.footer-links h4{font-size:12px;color:#FACC15;margin-bottom:10px}
+.footer-links a{display:block;font-size:12px;color:#fff;opacity:.85;text-decoration:none;margin-bottom:8px;line-height:1.4}.footer-bottom{border-top:1px solid #262626;padding:14px 18px;font-size:11px;opacity:.6;display:flex;justify-content:space-between;align-items:center}
+#detail{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;overflow:auto;z-index:200;padding-bottom:170px}
+.box{background:#111111;margin:20px;border-radius:20px;padding:18px;padding-bottom:180px}
+input{width:100%;padding:12px;border-radius:10px;border:1px solid #262626;background:#0A0A0A;color:#fff;margin:8px 0}
+label{font-size:13px;font-weight:700;display:block;margin-top:10px}
+.qrbox{background:linear-gradient(160deg,#1A1A1A,#0A0A0A);color:#fff;border:1px solid #FACC15;border-radius:18px;padding:22px 18px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);position:relative;overflow:hidden}
+.qrbox::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#FACC15,#FDE68A,#FACC15)}
+.qrbox .rek-box{background:rgba(255,255,255,.08);border:1px dashed rgba(250,204,21,.6);border-radius:12px;padding:12px;margin:12px 0}
+.qrbox .no-rek{font-size:26px;font-weight:900;letter-spacing:2px;color:#fff}
+.copy-btn{background:#0A0A0A;border:1px solid #FACC15;border-radius:8px;padding:8px 12px;color:#fff;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;margin-top:8px;font-size:12px;font-weight:700}
+.copy-btn svg{width:18px;height:18px;stroke:#fff}
+.btn-beli{width:100%;padding:14px;border:none;border-radius:12px;background:#FACC15;color:#000;font-weight:900;font-size:16px;cursor:pointer;margin-top:12px}
+.btn-wa{background:#25D366;color:#fff}
+.close{float:right;cursor:pointer;font-size:20px}
+#listProduk{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.produk{background:#1A1A1A;border:1px solid #262626;border-radius:16px;padding:14px 12px;display:flex;flex-direction:column;justify-content:space-between;min-height:145px;cursor:pointer}
+.produk .p-nama{font-size:14px;font-weight:800;line-height:1.3}
+.produk .p-harga{display:flex;gap:8px;align-items:center;margin-top:10px}
+.produk .p-harga b{color:#FACC15;font-size:17px}
+.produk .p-hint{font-size:11px;color:#FDE68A;margin-top:10px;background:#0A0A0A;border:1px dashed #FACC1566;border-radius:8px;padding:6px;text-align:center}
+#bottomBar{position:fixed;left:0;right:0;bottom:0;background:#111111;border-top-left-radius:20px;border-top-right-radius:20px;padding:14px 14px 18px;z-index:300;display:none;max-height:55vh;overflow:auto;border-top:1px solid #FACC15}
+#bottomBar button{background:#FACC15;color:#000;font-weight:900;border:none}
+#bottomBar b{color:#FACC15}
+#bottomBar div{border-color:#FACC15 !important}
+.cart-item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px dashed #262626;font-size:13px}
+.cart-item b{color:#FACC15}.cart-qty{display:flex;gap:6px;align-items:center}
+.cart-qtybutton{width:26px;height:26px;border:none;border-radius:6px;background:#FACC15;color:#000;font-weight:900;cursor:pointer}
+#qrArea{margin-top:12px}
+.detail-footer{margin-top:18px;background:linear-gradient(135deg,#1A1A1A,#111111);border:1px solid #FACC15;border-radius:16px;padding:16px;text-align:center}
+.detail-footer .f-logo{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:19px;font-weight:900;font-style:italic;color:#FACC15;line-height:1;white-space:nowrap;text-align:center}
+.detail-footer .f-logo span{color:#FFF}
+.detail-footer .f-star{color:#FACC15;font-size:13px;margin:8px 0 4px}
+.detail-footer .f-tag{font-size:12px;opacity:.9}
+.detail-footer .f-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px}
+.detail-footer .f-item{background:#0A0A0A;border-radius:10px;padding:10px 4px;font-size:11px;line-height:1.4}
+.detail-footer .f-item b{display:block;font-size:14px;margin-bottom:2px}
+.detail-footer .f-pay{margin-top:12px;font-size:11px;opacity:.8;border-top:1px dashed #262626;padding-top:10px}
+@media (min-width:1024px){
+.footer-banner{height:340px}
+.footer-banner-text b{font-size:46px;padding:14px 28px;border-radius:12px;line-height:1.1}
+.footer-banner-text span{font-size:16px;padding:8px 20px;margin-top:14px}
+.footer-body{padding:32px 40px 20px}
+.footer-logo{font-size:26px}
+.footer-logo img{width:90px !important;height:90px !important;border-radius:16px}
+.footer-desc{font-size:15px;line-height:1.7;max-width:800px;margin:18px auto 0}
+.footer-sosmed a{width:44px;height:44px;font-size:20px}
+.footer-links h4{font-size:15px}
+.footer-links a{font-size:14px}
+.footer-bottom{font-size:13px;padding:18px 40px}
+  }.slider,.slides,.slide{height:200px!important}
+.slide::before,.slide::after,.slider::before,.slider::after{display:none!important;background:none!important}
+.slide h2,.slide p{display:none!important}
+.slide img{width:100%!important;height:100%!important;object-fit:fill!important;object-position:center!important;filter:none!important;opacity:1!important}
+footer::before,footer::after,.footer-banner::before,.footer-banner::after,.cta-banner::before,.cta-banner::after{display:none!important;background:none!important}
+footer,.footer-banner,.cta-banner{background:none!important;background-color:transparent!important}
+footer img,.footer-banner img,.cta-banner img{width:100%!important;height:auto!important;object-fit:fill!important;display:block!important;opacity:1!important;filter:none!important;mix-blend-mode:normal!important}
+footer *{mix-blend-mode:normal!important}
+</style><body>
+<header style="display:flex !important;align-items:center !important;line-height:0 !important;overflow:hidden !important">
+<div class="logo" style="display:flex !important;align-items:center !important;line-height:0 !important;background:transparent !important;border:none !important;padding:0 !important;margin:0 !important;float:none !important"><img src="https://wsrv.nl/?url=i.ibb.co/W4KwjhKn/IMG-20261122-WA4461.jpg&w=800&q=90&output=webp" style="height:48px !important;width:auto !important;display:block !important;margin:0 !important;padding:0 !important;float:none !important;vertical-align:middle !important;background:transparent !important;mix-blend-mode:screen !important"></div>
+<button class="icon-btn" onclick="toggleSearch()"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg></button>
+<div class="lang-pill"><span class="flag">🇮🇩</span> ID</div>
+<button class="icon-btn" onclick="toggleDrawer(true)"><svg viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
+</header>
+<style>.wrap-kotak{display:flex;justify-content:center;padding:8px 12px 2px;min-height:32px}
+.kotak-notif{background:linear-gradient(90deg,#111111,#1A1A1A);border:1px solid #FACC15;border-radius:10px;padding:7px 12px;font-size:13px;font-weight:800;letter-spacing:.2px;max-width:94%;text-align:center;line-height:1.4;box-shadow:0 2px 10px rgba(0,0,0,.4);animation:munculSebentar 10s ease-in-out infinite;color:#FACC15;text-shadow:1px 1px 0 #000,0 0 10px rgba(250,204,21,.45)}
+@keyframes munculSebentar{0%{opacity:0;transform:translateY(8px)}5%{opacity:1;transform:translateY(0)}28%{opacity:1;transform:translateY(0)}35%{opacity:0;transform:translateY(-6px)}100%{opacity:0;transform:translateY(-6px)}}
+</style>
+<div class="wrap-kotak">
+  <div class="kotak-notif" id="kotak-teks">🔥 An***i baru aja top up ML 86 Diamond</div>
+</div>
+<script>
+const listKotak = [
+  "🔥 An***i baru aja top up ML 86 Diamond",
+  "🔥 Bu***o baru beli Google Play 50.000",
+  "🔥 Sa***a baru isi pulsa 25.000",
+  "🔥 xX_D4rk*** baru top up FF 140 Diamond",
+  "🔥 Ri***i baru beli Unipin 100.000",
+  "🔥 De***a baru isi kuota 10GB",
+  "🔥 Pr0_Sn1p*** baru top up PUBG 60 UC",
+  "🔥 Fa***r baru beli Google Play 100.000",
+  "🔥 Pu***i baru top up Valorant 475 VP",
+  "🔥 Ka***a baru beli Token PLN 50.000",
+  "🔥 Zz_Kill*** baru top up HOK 80 Token",
+  "🔥 Me***a baru beli Unipin 25.000rb",
+  "🔥 Al***n baru top up Genshin 60 Genesis",
+  "🔥 Ra***a baru isi pulsa 45.000",
+  "🔥 Kyy*** baru top up ML 172 Diamond"
+];
+let idx = 0;
+setInterval(() => {
+  idx = (idx + 1) % listKotak.length;
+  const el = document.getElementById('kotak-teks');
+  el.textContent = listKotak[idx];
+  el.style.animation = 'none';
+  void el.offsetWidth;
+  el.style.animation = '';
+}, 10000);
+</script>
+<div class="search-bar" id="searchBar"><input id="searchInput" placeholder="Cari game / produk..." oninput="cari(this.value)"></div>
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
+<div class="drawer" id="drawer"><div class="drawer-top"><b>MENU</b><span onclick="toggleDrawer(false)" style="cursor:pointer;font-size:20px">✕</span></div><a onclick="goTopup()">Top Up <span>›</span></a><a onclick="goCek()">Cek Transaksi <span>›</span></a><a onclick="goLeader()">Leaderboard <span>›</span></a><a onclick="goMasuk()">Masuk <span>›</span></a></div>
+<div class="slider"><div class="slides" id="slides">
+<div class="slide"><img src="https://i.ibb.co.com/rGK9z9Tr/IMG-20261121-WA7529.jpg"></div>
+<div class="slide"><img src="https://i.ibb.co.com/Zp1ZS26N/IMG-20261121-WA1542.jpg"></div>
+<div class="slide"><img src="https://i.ibb.co.com/mrb9Rm6Q/IMG-20261121-WA5653.jpg"></div>
+</div></div><div class="dots" id="dots"><span class="on"></span><span></span><span></span></div>
+<div class="populer" id="populerWrap"><h3>🔥 Populer</h3><p>Game paling sering dibeli minggu ini</p></div>
+<div class="grid" id="gridPopuler"></div>
+<div class="tabs"><button class="on" onclick="filterCat('all',this)">Semua</button><button onclick="filterCat('game',this)">Game</button><button onclick="filterCat('voucher',this)">Voucher</button><button onclick="filterCat('pulsa',this)">Pulsa dan Data</button></div>
+<div class="grid-all" id="grid"></div><div class="footer"><div class="footer-banner">
+<img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80">
+<div class="footer-banner-text"><b>TOP UP FREE FIRE NO.1<br>DI INDONESIAAA !</b>
+<span>WWW.PIXELGAMING.COM</span>
+</div></div><div class="footer-body">
+<div class="footer-logo"><img src="https://wsrv.nl/?url=i.ibb.co/W4KwjhKn/IMG-20261122-WA4461.jpg&w=800&q=90&output=webp" style="height:48px !important;width:auto !important;object-fit:contain;display:block !important;margin:0 auto !important;background:transparent !important;mix-blend-mode:screen !important;"></div>⭐
+<p class="footer-desc">Website top up game dan voucher resmi di Indonesia, menawarkan harga kompetitif, legalitas 100%, keamanan terpercaya, layanan 24 jam, serta metode pembayaran terlengkap.</p>
+<div class="footer-sosmed">
+<a href="https://wa.me/6285211414527" target="_blank">💬</a>
+<a href="#">📸</a>
+<a href="#">🎵</a>
+<a href="#">▶️</a>
+</div><div class="footer-links">
+<div><h4>📍 Peta Situs</h4><a href="#">🏠 Beranda</a><a href="#">🔍 Cek Transaksi</a><a href="https://wa.me/6285211414527">📞 Hubungi Kami</a><a href="#">⭐ Ulasan</a><a href="#">💰 Daftar Harga</a></div>
+<div><h4>🎧 Dukungan</h4><a href="https://wa.me/6285211414527">🟢 Whatsapp</a><a href="#">❓ FAQ</a><a href="#">🛡️ Garansi</a></div>
+<div><h4>📄 Legalitas</h4><a href="#">🔒 Kebijakan Privasi</a><a href="#">📜 Syarat & Ketentuan</a></div>
+</div></div><div class="footer-bottom"><span>© 2026 PIXEL GAMING. All rights reserved.</span><span>🌙</span></div>
+</div><br><div id="detail"><div class="box"><span class="close" onclick="tutup()">✕</span><h2 id="dJudul"></h2><p id="dSub"></p>
+<label id="lblNama">Nama</label><input id="inNama" placeholder="Nama">
+<label id="lblHP">No HP</label><input id="inHP" placeholder="0812xxxx">
+<label id="lblID">ID Game</label><input id="inID" placeholder="12345678">
+<div id="ketVoucher" style="display:none;font-size:12px;line-height:1.5;color:#FFB3B3;background:#2A0000;border:1px dashed #FF1E1E66;border-radius:8px;padding:8px 10px;margin-top:6px">Kode voucher akan dikirim ke WA tersebut, harap masukkan nomor yang terhubung ke WhatsApp</div>
+<label>Pilih Nominal</label><div id="listProduk"></div>
+<div class="detail-footer">
+<div class="f-logo" style="padding:14px 0 6px;overflow:visible;"><img src="https://wsrv.nl/?url=i.ibb.co/W4KwjhKn/IMG-20261122-WA4461.jpg&w=800&q=90&output=webp" style="height:48px !important;width:auto !important;object-fit:contain;display:block !important;margin:0 auto !important;background:transparent !important;mix-blend-mode:screen !important;"></div>
+<div class="f-star">⭐⭐⭐⭐⭐ 4.9 | 10.000+ Transaksi Sukses</div>
+<div class="f-tag">Top Up Aman, Cepat & Terpercaya</div>
+<div class="f-grid">
+<div class="f-item"><b>⚡</b>INSTAN<br>1-5 Menit</div>
+<div class="f-item"><b>🛡️</b>GARANSI<br>100% Uang Kembali</div>
+<div class="f-item"><b>💬</b>ADMIN<br>Fast Respon 24 Jam</div>
+</div>
+<div id="qrArea" style="display:none">
+  <div class="qrbox">
+<div style="font-size:11px;letter-spacing:3px;font-weight:900;background:linear-gradient(180deg,#FFF3A3 0%,#FFD700 45%,#B8860B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;color:#FFD700">✦ PIXEL GAMING ✦</div>
+    <b style="font-size:17px;letter-spacing:1px">SCAN QRIS UNTUK BAYAR</b>
+    <p id="qrNominal" style="font-size:13px;opacity:.8;margin:10px 0"></p>
+    <!-- QR ORIGINAL, JANGAN DIPOTONG -->
+<img src="https://wsrv.nl/?url=i.ibb.co/67Z2Kn7H/gopayqris.png&w=640&output=png" alt="QRIS Pixel Gaming Store" style="width:100%; max-width:320px; height:auto; display:block; margin:0 auto; border-radius:12px; background:#fff; padding:8px;">
+<!-- INI YANG BARU, TULISAN DOWNLOAD BUKAN TOMBOL -->
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 4px 4px;border-top:1px solid #444;margin-top:12px">
+      <a href="#" onclick="downloadQR(event)" style="color:#fff;text-decoration:underline;font-size:18px">Download</a>
+      <div style="text-align:right">
+        <div style="color:#999;font-size:12px;letter-spacing:1px">NOMINAL</div>
+        <p id="qrTotal" style="font-weight:900;font-size:19px;color:#fff;margin:0"></p>
+      </div>
+    </div>
+    <div style="text-align:left; font-size:13px; line-height:1.6; margin-top:12px;">
+      <b>Selesaikan pembayaran dengan 4 langkah mudah:</b><br>
+      1. Simpan gambar QRIS di HP Anda<br>
+      2. Buka aplikasi dompet digital Anda<br>
+      3. Pilih fitur Scan QR atau Upload QR<br>
+      4. Upload gambar QRIS ini, lalu ikuti instruksi
+    </div>
+    <p style="font-size:11px;opacity:.6;margin-top:10px">Setelah bayar, klik tombol di bawah ya!</p>
+  </div>
+</div>
+<script>
+function downloadQR(e){
+  e.preventDefault();
+  const url = "https://wsrv.nl/?url=i.ibb.co/67Z2Kn7H/gopayqris.png&w=640&output=png";
+  fetch(url).then(r => r.blob()).then(blob => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = "qris-pixel-gaming.png";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }).catch(()=>{ window.open(url, '_blank'); });
+}
+</script>
+<button onclick="kirimEmail(); tampilDetail();" style="width:100%;padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-weight:bold;margin-top:10px">CEK PESANAN SAYA</button>
+<div id="detail-pesanan" style="display:none; background:#fff; border:1px solid #ddd; padding:12px; border-radius:8px; margin-top:12px; font-size:13px; color:#333; line-height:1.8; text-align:left;">
+<div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:14px;"><span>✅ Detail Pesanan</span><button onclick="document.getElementById('detail-pesanan').style.display='none'" style="background:#eee; border:none; border-radius:20px; padding:4px 10px; font-size:12px; font-weight:bold; cursor:pointer;">✕ Tutup</button></div>
+<div id="isi-detail-pesanan"></div>
+</div>
+<div style="background:#fff3cd; border:1px solid #ffc107; padding:10px; border-radius:8px; margin-top:12px; font-size:13px; text-align:center; color:#333; line-height:1.5;">
+  ⚠️ <b>Pesanan akan dikirim sesuai antrian.</b>
+</div>
+<div style="width:100%;padding:15px 0 5px 0;text-align:center;background:transparent">
+  <span onclick="let p=this;while(p.parentElement&&p.parentElement.tagName!=='BODY'){p=p.parentElement} p.style.display='none';document.body.style.overflow=''" style="color:#FFD700;font-size:15px;font-weight:bold;cursor:pointer;text-decoration:underline">Menu Utama ↩</span>
+</div>
+</div></div>
+<div id="bottomBar">
+<div id="cartList"></div>
+<div id="cartEmpty" style="border:1px dashed #FF1E1E;border-radius:14px;padding:16px;text-align:center">Belum ada item produk yang dipilih.</div>
+<div style="display:flex;justify-content:space-between;margin-top:10px;font-weight:900"><span>Total:</span><span id="cartTotal" style="color:#FACC15">Rp 0</span></div>
+<button class="btn-pesan" onclick="tampilQR()" style="width:100%;margin-top:12px;padding:15px;border:none;border-radius:25px;background:linear-gradient(90deg,#FACC15,#EAB308);color:#000;font-size:18px;font-weight:900;cursor:pointer"><span style="background:#fff;border-radius:50%;padding:5px 7px;font-size:18px;box-shadow:0 2px 8px rgba(0,0,0,.4)">🛒</span> &nbsp;Pesan Sekarang!</button>
+</div><script>
+function salin(teks){navigator.clipboard.writeText(teks).then(()=>{alert('Tersalin: '+teks)});}
+function toggleSearch(){let s=document.getElementById('searchBar');s.style.display=s.style.display==='block'?'none':'block';if(s.style.display==='block'){document.getElementById('searchInput').focus()}}
+function toggleDrawer(open){document.getElementById('drawer').classList.toggle('open',open);document.getElementById('drawerOverlay').style.display=open?'block':'none'}
+const WA="6285211414527";let D=[{c:"game",pop:1,i:"https://client-cdn.bangjeff.com/frontalshop.com/product/FRS%20Icon%20G%20MLBB%20Global.webp",n:"Mobile Legends",b:"Moonton",p:[["5 Diamond","Rp 1.685"],["3 Diamond","Rp 1.710"],["10 (10+0) Diamond","Rp 3.318"],["12 (11+1) Diamond","Rp 3.759"],["14 (14+0) Diamond","Rp 4.925"],["15 (15+0) Diamond","Rp 4.925"],["19 (17+2) Diamond","Rp 7.927"],["28 (25+3) Diamond","Rp 10.595"],["36 (33+3) Diamond","Rp 13.167"],["38 (34+4) Diamond","Rp 13.898"],["44 (40+4) Diamond","Rp 14.637"],["50 (50+0) Diamond","Rp 17.948"],["Weekly Elite Bundle","Rp 18.105"],["54 (50+4) Diamond","Rp 18.256"],["56 (51+5) Diamond","Rp 18.348"],["100 (50+50) Diamond","Rp 18.367"],["59 (53+6) Diamond","Rp 18.793"],["70 (63+7) Diamond","Rp 23.825"],["71 (64+7) Diamond","Rp 23.832"],["72 (65+7) Diamond","Rp 24.300"],["74 (69+5) Diamond","Rp 24.248"],["78 (70+8) Diamond","Rp 25.978"],["85 (77+8) Diamond","Rp 26.660"],["80 (74+6) Diamond","Rp 27.052"],["86 (78+8) Diamond","Rp 27.768"],["92 (87+5) Diamond","Rp 30.695"],["98 (89+9) Diamond","Rp 31.250"],["100 (91+9) Diamond","Rp 31.318"],["1X Weekly Diamond Pass 220 (80+20/Hari)","Rp 33.480"],["110 (101+9) Diamond","Rp 34.950"],["112 (102+10) Diamond","Rp 35.119"],["113 (102+11) Diamond","Rp 35.975"],["118 (59+59) Diamond","Rp 37.900"],["129 (117+12) Diamond","Rp 40.250"],["144 (130+14) Diamond","Rp 43.400"],["300 (150+150) Diamond","Rp 51.338"],["170 (154+16) Diamond","Rp 51.550"],["172 (156+16) Diamond","Rp 51.598"],["185 (167+18) Diamond","Rp 55.600"],["182 (165+17) Diamond","Rp 56.454"],["2X Weekly Diamond Pass 440 (80+20/Hari)","Rp 63.800"],["222 (200+22) Diamond","Rp 66.300"],["229 (207+22) Diamond","Rp 69.980"],["240 (217+23) Diamond","Rp 70.982"],["257 (234+23) Diamond","Rp 75.998"],["Coupon Pass","Rp 77.350"],["277 (250+27) Diamond","Rp 82.150"],["Epic Bundle Bulanan","Rp 82.636"],["284 (254+30) Diamond","Rp 83.638"],["278 (251+27) Diamond","Rp 84.901"],["264 Diamond","Rp 86.200"],["296 (256+40) Diamond","Rp 86.500"],["Starlight Membership","Rp 89.496"],["301 (261+40) Diamond","Rp 90.770"],["3X Weekly Diamond Pass 660 (80+20/Hari)","Rp 93.455"],["324 (281+43) Diamond","Rp 97.760"],["344 (312+32) Diamond","Rp 100.923"],["345 (301+44) Diamond","Rp 104.356"],["355 (309+46) Diamond","Rp 107.038"],["370 (333+37) Diamond","Rp 110.490"],["371 (324+47) Diamond","Rp 112.400"],["374 (326+48) Diamond","Rp 112.940"],["381 (333+48) Diamond","Rp 114.561"],["384 (346+38) Diamond","Rp 114.990"],["408 (367+41) Diamond","Rp 120.898"],["4X Weekly Diamond Pass 880 (80+20/Hari)","Rp 123.930"],["429 (390+39) Diamond","Rp 125.148"],["425 (373+52) Diamond","Rp 127.647"],["427 (384+43) Diamond","Rp 128.780"],["448 (403+45) Diamond","Rp 134.495"],["450 (408+42) Diamond","Rp 135.200"],["460 (415+45) Diamond","Rp 136.990"],["500 (452+49) Diamond","Rp 146.994"],["514 (468+46) Diamond","Rp 148.998"],["518 (469+52) Diamond","Rp 150.673"],["512 (461+51) Diamond","Rp 153.226"],["5X Weekly Diamond Pass 1100 (80+20/Hari)","Rp 154.910"],["522 (471+51) Diamond","Rp 156.246"],["568 (503+65) Diamond","Rp 159.830"],["Twilight Pass","Rp 160.819"],["554 (502+52) Diamond","Rp 166.116"],["1000 (500+500) Diamond","Rp 166.666"],["600 (568+32) Diamond","Rp 170.646"],["601 (533+68) Diamond","Rp 175.483"],["642 (570+72) Diamond","Rp 182.390"],["706 (625+81) Diamond","Rp 198.747"],["716 (638+78) Diamond","Rp 203.180"],["712 (633+79) Diamond","Rp 207.671"],["717 (638+79) Diamond","Rp 209.380"],["722 (643+79) Diamond","Rp 211.190"],["750 (668+82) Diamond","Rp 219.243"],["762 (666+96) Diamond","Rp 226.120"],["808 (720+88) Diamond","Rp 237.391"],["875 (774+101) Diamond","Rp 245.753"],["963 (859+104) Diamond","Rp 273.876"],["965 (856+109) Diamond","Rp 279.328"],["977 (867+110) Diamond","Rp 283.382"],["966 (852+114) Diamond","Rp 283.514"],["Starlight Member Plus","Rp 299.695"],["1050 (937+113) Diamond","Rp 298.860"],["1136 (1006+130) Diamond","Rp 328.179"],["1134 (1008+126) Diamond","Rp 328.719"],["1139 (1013+126) Diamond","Rp 330.329"],["1159 (1031+128) Diamond","Rp 335.706"],["1164 (1036+128) Diamond","Rp 337.315"],["1183 (1041+142) Diamond","Rp 342.632"],["1220 (1159+61) Diamond","Rp 345.176"],["1230 (1083+147) Diamond","Rp 356.058"],["1220 (1075+145) Diamond","Rp 356.374"],["1368 (1218+150) Diamond","Rp 395.844"],["1412 (1250+162) Diamond","Rp 409.351"],["1443 (1277+166) Diamond","Rp 415.607"],["1453 (1295+158) Diamond","Rp 422.043"],["1507 (1335+172) Diamond","Rp 434.397"],["1575 (1396+179) Diamond","Rp 452.430"],["1672 (1484+188) Diamond","Rp 482.187"],["1704 (1509+195) Diamond","Rp 490.769"],["1750 (1548+202) Diamond","Rp 501.535"],["1835 (1625+210) Diamond","Rp 525.736"],["2010 (1708+302) Diamond","Rp 545.106"],["2046 (1741+305) Diamond","Rp 556.369"],["2380 (2041+339) Diamond","Rp 576.151"],["2180 (1862+318) Diamond","Rp 594.506"],["2195 (1860+335) Diamond","Rp 597.633"],["2199 (1879+320) Diamond","Rp 600.405"],["2350 (2017+333) Diamond","Rp 644.438"],["2382 (2033+349) Diamond","Rp 653.510"],["2536 (2182+354) Diamond","Rp 698.126"],["2578 (2211+367) Diamond","Rp 706.195"],["2885 (2482+403) Diamond","Rp 792.123"],["2904 (2499+405) Diamond","Rp 798.023"],["2977 (2565+412) Diamond","Rp 819.497"],["3453 (2985+468) Diamond","Rp 953.213"],["3481 (3010+471) Diamond","Rp 961.797"],["3693 (3202+491) Diamond","Rp 1.024.014"],["4020 (3416+604) Diamond","Rp 1.083.211"],["4804 (4323+481) Diamond","Rp 1.110.578"],["4404 (3763+641) Diamond","Rp 1.195.394"],["4678 (4001+677) Diamond","Rp 1.271.112"],["4830 (4003+827) Diamond","Rp 1.298.129"],["5398 (4506+892) Diamond","Rp 1.459.219"],["5372 (4826+546) Diamond","Rp 1.459.219"],["6030 (5124+906) Diamond","Rp 1.621.317"],["5940 (5118+822) Diamond","Rp 1.627.146"],["6001 (5033+968) Diamond","Rp 1.631.007"],["6257 (5274+983) Diamond","Rp 1.705.653"],["6840 (5711+1129) Diamond","Rp 1.835.235"],["7195 (6020+1175) Diamond","Rp 1.938.275"],["7660 (6442+1218) Diamond","Rp 2.069.880"],["7723 (6487+1236) Diamond","Rp 2.088.084"],["8040 (6832+1208) Diamond","Rp 2.157.923"],["8303 (7005+1297) Diamond","Rp 2.249.242"]]},
+{c:"game",pop:1,i:"https://client-cdn.bangjeff.com/frontalshop.com/product/FRS%20Icon%20G%20Free%20Fire%20(2).webp",n:"Free Fire",b:"Garena • Biasa",p:[["5 Diamond","Rp 828"],["10 Diamond","Rp 1.575"],["12 Diamond","Rp 1.791"],["15 Diamond","Rp 2.381"],["20 Diamond","Rp 4.092"],["25 Diamond","Rp 5.036"],["30 Diamond","Rp 5.710"],["40 Diamond","Rp 7.017"],["50 Diamond","Rp 7.017"],["55 Diamond","Rp 7.734"],["70 Diamond","Rp 8.998"],["75 Diamond","Rp 9.960"],["80 Diamond","Rp 10.663"],["90 Diamond","Rp 13.100"],["100 Diamond","Rp 13.792"],["120 Diamond","Rp 15.914"],["130 Diamond","Rp 17.256"],["140 Diamond","Rp 17.948"],["145 Diamond","Rp 18.826"],["150 Diamond","Rp 19.603"],["160 Diamond","Rp 21.055"],["190 Diamond","Rp 24.070"],["200 Diamond","Rp 25.400"],["210 Diamond","Rp 26.143"],["250 Diamond","Rp 32.801"],["260 Diamond","Rp 32.804"],["280 Diamond","Rp 34.856"],["300 Diamond","Rp 37.876"],["355 Diamond","Rp 43.017"],["375 Diamond","Rp 45.966"],["405 Diamond","Rp 48.931"],["420 Diamond","Rp 54.498"],["425 Diamond","Rp 50.722"],["475 Diamond","Rp 56.971"],["500 Diamond","Rp 59.562"],["510 Diamond","Rp 61.429"],["545 Diamond","Rp 64.200"],["565 Diamond","Rp 67.165"],["635 Diamond","Rp 75.372"],["720 Diamond","Rp 81.988"],["770 Diamond","Rp 87.710"],["790 Diamond","Rp 89.838"],["800 Diamond","Rp 91.264"],["860 Diamond","Rp 98.037"],["930 Diamond","Rp 106.140"],["1000 Diamond","Rp 114.954"],["1050 Diamond","Rp 120.351"],["1075 Diamond","Rp 122.025"],["1080 Diamond","Rp 133.048"],["1450 Diamond","Rp 163.461"],["2000 Diamond","Rp 225.849"],["2180 Diamond","Rp 243.961"],["2200 Diamond","Rp 266.398"],["2350 Diamond","Rp 261.757"],["2720 Diamond","Rp 303.085"],["3640 Diamond","Rp 410.193"],["4000 Diamond","Rp 449.966"],["7290 Diamond","Rp 804.715"],["Membership Level Up Pass - Level 6","Rp 6.076"],["Membership Level Up Pass - Level 10","Rp 9.336"],["Membership Level Up Pass - Level 15","Rp 9.336"],["Membership Level Up Pass - Level 20","Rp 9.336"],["Membership Level Up Pass - Level 25","Rp 9.464"],["Membership Level Up Pass - Level 30","Rp 15.300"],["Membership Level Up Pass","Rp 15.875"],["Membership Mingguan 50 Diamond","Rp 26.291"],["Booyah Pass (BP CARD)","Rp 39.550"],["Membership Bulanan 50 Diamond","Rp 75.206"]]},{c:"game",pop:1,i:"https://client-cdn.bangjeff.com/8ba38f53-b096-4bea-8212-536c2a1f0bda.webp",n:"Free Fire MAX",b:"Garena • MAX",p:[["5 Diamond","Rp 828"],["10 Diamond","Rp 1.575"],["12 Diamond","Rp 1.791"],["15 Diamond","Rp 2.381"],["20 Diamond","Rp 4.092"],["25 Diamond","Rp 5.036"],["30 Diamond","Rp 5.710"],["40 Diamond","Rp 7.017"],["50 Diamond","Rp 7.017"],["55 Diamond","Rp 7.734"],["70 Diamond","Rp 8.998"],["75 Diamond","Rp 9.960"],["80 Diamond","Rp 10.663"],["90 Diamond","Rp 13.100"],["100 Diamond","Rp 13.792"],["120 Diamond","Rp 15.914"],["130 Diamond","Rp 17.256"],["140 Diamond","Rp 17.948"],["145 Diamond","Rp 18.826"],["150 Diamond","Rp 19.603"],["160 Diamond","Rp 21.055"],["190 Diamond","Rp 24.070"],["200 Diamond","Rp 25.400"],["210 Diamond","Rp 26.143"],["250 Diamond","Rp 32.801"],["260 Diamond","Rp 32.804"],["280 Diamond","Rp 34.856"],["300 Diamond","Rp 37.876"],["355 Diamond","Rp 43.017"],["375 Diamond","Rp 45.966"],["405 Diamond","Rp 48.931"],["420 Diamond","Rp 54.498"],["425 Diamond","Rp 50.722"],["475 Diamond","Rp 56.971"],["500 Diamond","Rp 59.562"],["510 Diamond","Rp 61.429"],["545 Diamond","Rp 64.200"],["565 Diamond","Rp 67.165"],["635 Diamond","Rp 75.372"],["720 Diamond","Rp 81.988"],["770 Diamond","Rp 87.710"],["790 Diamond","Rp 89.838"],["800 Diamond","Rp 91.264"],["860 Diamond","Rp 98.037"],["930 Diamond","Rp 106.140"],["1000 Diamond","Rp 114.954"],["1050 Diamond","Rp 120.351"],["1075 Diamond","Rp 122.025"],["1080 Diamond","Rp 133.048"],["1450 Diamond","Rp 163.461"],["2000 Diamond","Rp 225.849"],["2180 Diamond","Rp 243.961"],["2200 Diamond","Rp 266.398"],["2350 Diamond","Rp 261.757"],["2720 Diamond","Rp 303.085"],["3640 Diamond","Rp 410.193"],["4000 Diamond","Rp 449.966"],["7290 Diamond","Rp 804.715"],["Membership Level Up Pass - Level 6","Rp 6.076"],["Membership Level Up Pass - Level 10","Rp 9.336"],["Membership Level Up Pass - Level 15","Rp 9.336"],["Membership Level Up Pass - Level 20","Rp 9.336"],["Membership Level Up Pass - Level 25","Rp 9.464"],["Membership Level Up Pass - Level 30","Rp 15.300"],["Membership Level Up Pass","Rp 15.875"],["Membership Mingguan 50 Diamond","Rp 26.291"],["Booyah Pass (BP CARD)","Rp 39.550"],["Membership Bulanan 50 Diamond","Rp 75.206"]]},
+{c:"game",pop:1,i:"https://client-cdn.bangjeff.com/frontalshop.com/product/FRS%20Icon%20G%20Arena%20of%20Valor.webp",n:"Arena of Valor",b:"Garena",p:[["40 Voucher","Rp 11.500"],["90 Voucher","Rp 21.000"],["230 Voucher","Rp 48.500"],["470 Voucher","Rp 95.500"],["950 Voucher","Rp 190.000"],["1430 Voucher","Rp 286.000"],["2390 Voucher","Rp 476.000"]]},
+{c:"game",pop:1,i:"https://store-images.s-microsoft.com/image/apps.22131.64374245401097180.1f6449c0-3d28-414b-b818-dea88d640877.c04e013e-5ba6-48f8-a42c-32a224f4beb0",n:"PUBG Mobile",b:"Level Infinite",p:[["15 UC","Rp 9.300"],["25 UC","Rp 18.337"],["50 UC","Rp 18.795"],["60 UC","Rp 18.800"],["35 UC","Rp 18.925"],["100 UC","Rp 35.306"],["70 UC","Rp 41.050"],["150 UC","Rp 52.230"],["125 UC","Rp 53.400"],["210 UC","Rp 67.831"],["200 UC","Rp 81.400"],["300 UC","Rp 86.400"],["250 UC","Rp 86.500"],["375 UC","Rp 103.800"],["350 UC","Rp 104.450"],["500 UC","Rp 133.550"],["525 UC","Rp 149.100"],["700 UC","Rp 182.100"],["750 UC","Rp 196.805"],["1000 UC","Rp 266.400"],["1100 UC","Rp 282.900"],["1250 UC","Rp 340.470"],["1500 UC","Rp 410.990"],["Elite Pass Plus + Kupon Peti Klasik","Rp 422.000"],["1750 UC","Rp 446.700"],["2500 UC","Rp 606.450"]]},{c:"game",i:"https://client-cdn.bangjeff.com/741e9167-79ff-4e4d-bd71-f9ddb26b173b.jpg",n:"Call of Duty Mobile",b:"Garena",p:[["26 CP","Rp 4.800"],["53 CP","Rp 10.095"],["106 CP","Rp 19.795"],["264 CP","Rp 46.975"],["528 CP","Rp 96.475"],["1056 CP","Rp 185.000"],["1584 CP","Rp 229.780"]]},
+{c:"game",i:"https://s2-techtudo.glbimg.com/Yyc7q4giwvgdHNeJMeXMNtnXtN8=/1200x/smart/filters:cover():strip_icc()/i.s3.glbimg.com/v1/AUTH_08fbf48bc0524877943fe86e43087e7a/internal_photos/bs/2021/n/O/AuziRFREm6BbQLTPqX8Q/2013-03-29-point-blank.jpg",n:"Point Blank",b:"Zepetto",p:[["1200 PB Cash","Rp 11.400"],["2400 PB Cash","Rp 20.618"],["6000 PB Cash","Rp 47.800"],["12000 PB Cash","Rp 94.415"],["36000 PB Cash","Rp 267.048"]]},
+{c:"game",i:"https://dl.memuplay.com/new_market/img/com.netease.mrzhna.icon.2026-10-13-01-19-12.png",n:"Life After",b:"NetEase",p:[["25 Credit","Rp 6.900"],["65 Credit","Rp 16.690"],["81 Credit","Rp 16.200"],["242 Credit","Rp 72.500"],["330 Credit","Rp 74.150"],["413 Credit","Rp 115.000"],["558 Credit","Rp 117.050"],["913 Credit","Rp 215.000"],["1108 Credit","Rp 218.050"]]},
+{c:"game",i:"https://cdn.displate.com/artwork/2026-03-30/e5f278f5-1ce8-4ebf-94cd-2f769fdabec8.jpg?speedsize=w_480",n:"Roblox",b:"Roblox",p:[["Vcr Robux 100","Rp 82.500"],["Vcr Robux 400","Rp 112.000"],["Vcr Robux 800","Rp 154.000"],["Vcr Robux 2.000","Rp 382.000"],["Vcr Robux 4.500","Rp 784.500"],["Vcr Robux 10.000","Rp 1.589.500"]]},
+{c:"voucher",i:"https://cdn.unipin.com/images/unipin-dark-square.png",n:"UniPin",b:"Voucher UniPin",p:[["UniPin 20.000","Rp 23.000"],["UniPin 50.000","Rp 53.000"],["UniPin 100.000","Rp 105.000"],["UniPin 150.000","Rp 155.000"],["UniPin 300.000","Rp 305.000"]]},
+{c:"voucher",i:"https://public-files.gumroad.com/qiwakz2bba5hxh2j19y9r16qmkjo",n:"Google Play",b:"Voucher Google Play",p:[["Google Play 20.000","Rp 23.000"],["Google Play 50.000","Rp 53.000"],["Google Play 100.000","Rp 105.000"],["Google Play 150.000","Rp 155.000"],["Google Play 300.000","Rp 305.000"]]},
+{c:"pulsa",i:"https://cdn.vcgamers.com/seller/assets/20251208154619-cropped-image.jpg",n:"Pulsa Nasional All Operator",b:"Telkomsel • Indosat • XL • Axis • Tri • Smartfren",p:[["Pulsa 5.000","Rp 8.000"],["Pulsa 10.000","Rp 13.000"],["Pulsa 15.000","Rp 18.000"],["Pulsa 20.000","Rp 23.000"],["Pulsa 25.000","Rp 28.000"],["Pulsa 50.000","Rp 53.000"],["Pulsa 100.000","Rp 103.000"],["Pulsa 150.000","Rp 155.000"],["Pulsa 200.000","Rp 205.000"]]},
+{c:"pulsa",i:"https://images.glints.com/unsafe/1920x0/glints-dashboard.oss-ap-southeast-1.aliyuncs.com/company-logo/fb41f107d1eca96384c13d0f8a1c7c87.jpeg",n:"Data Telkomsel",b:"Data Bulanan Telkomsel • All Jaringan 28 Hari",p:[["500MB All Jaringan 7 Hari","Rp 8.950"],["1GB All Jaringan 28 Hari","Rp 14.809"],["2GB All Jaringan 28 Hari","Rp 24.955"],["1,5GB All Jaringan 28 Hari","Rp 26.598"],["3GB All Jaringan 28 Hari","Rp 29.636"],["4GB All Jaringan 28 Hari","Rp 38.695"],["6GB All Jaringan 28 Hari","Rp 41.578"],["5GB All Jaringan 28 Hari","Rp 42.221"],["7GB All Jaringan 28 Hari","Rp 43.023"],["8GB All Jaringan 28 Hari","Rp 44.025"],["10GB All Jaringan 28 Hari","Rp 48.023"],["9GB All Jaringan 28 Hari","Rp 49.973"],["11GB All Jaringan 28 Hari","Rp 55.818"],["12GB All Jaringan 28 Hari","Rp 59.891"],["15GB All Jaringan 28 Hari","Rp 60.123"],["16GB All Jaringan 28 Hari","Rp 68.074"],["20GB All Jaringan 28 Hari","Rp 70.525"],["18GB All Jaringan 28 Hari","Rp 72.685"],["25GB All Jaringan 28 Hari","Rp 81.323"],["30GB All Jaringan 28 Hari","Rp 92.423"],["28GB All Jaringan 28 Hari","Rp 92.666"],["45GB All Jaringan 28 Hari","Rp 114.523"],["50GB All Jaringan 28 Hari","Rp 120.848"],["60GB All Jaringan 28 Hari","Rp 125.750"],["80GB All Jaringan 28 Hari","Rp 165.750"],["70GB All Jaringan 28 Hari","Rp 191.000"],["100GB All Jaringan 28 Hari","Rp 202.123"]]},
+{c:"pulsa",i:"https://downloadr2.apkmirror.com/wp-content/uploads/2022/12/04/63ac94aac8499.png",n:"Data Indosat",b:"Indosat • Freedom Internet Mobo",p:[["Freedom Internet 3GB 28 Hari","Rp 32.900"],["Freedom Internet 3GB 20 Hari","Rp 33.000"],["Freedom Internet 7GB 28 Hari","Rp 36.800"],["Freedom Internet 9GB 28 Hari","Rp 38.200"],["Freedom Internet 13GB 28 Hari","Rp 47.515"],["Freedom Internet 15GB 28 Hari","Rp 49.120"],["Freedom Internet 11GB 28 Hari","Rp 50.000"],["Freedom Internet 22GB 28 Hari","Rp 58.280"],["Freedom Internet 18GB 28 Hari","Rp 60.075"],["Freedom Internet 28GB 28 Hari","Rp 68.700"],["Freedom Internet 36GB 28 Hari","Rp 77.200"],["Freedom Internet 37GB 28 Hari","Rp 77.638"],["Freedom Internet 25GB 28 Hari","Rp 78.200"],["Freedom Internet Sensasi 50GB 28 Hari","Rp 89.300"],["Freedom Internet 42GB 28 Hari","Rp 91.799"],["Freedom Internet 45GB 28 Hari","Rp 94.020"],["Freedom Internet 66GB 28 Hari","Rp 97.800"],["Freedom Internet 70GB 28 Hari","Rp 99.000"],["Freedom Internet 55GB 28 Hari","Rp 101.253"],["Freedom Internet 80GB 28 Hari","Rp 109.100"],["Freedom Internet Sensasi 100GB 28 Hari","Rp 109.759"],["Freedom Internet 73GB 28 Hari","Rp 110.125"],["Freedom Internet Sensasi 150GB 28 Hari","Rp 144.500"],["Freedom Internet 120GB 28 Hari","Rp 145.740"],["Freedom Internet 300GB 28 Hari","Rp 159.750"],["Freedom Internet Sensasi 200GB 28 Hari","Rp 174.500"],["Freedom Internet 165GB 28 Hari","Rp 194.000"],["Freedom Internet 250GB 28 Hari","Rp 239.000"],["Freedom Internet 100GB 90 Hari","Rp 247.000"],["Freedom Internet 250GB 90 Hari","Rp 295.075"]]},
+{c:"pulsa",i:"https://storage.googleapis.com/static-es/provider/xl-new.png",n:"Data XL",b:"XL • Harian + Hotrod + X-Tra",p:[["800MB Reguler 24 Jam 30 Hari","Rp 10.000"],["Paket Harian S (1.5GB - 2.5GB) - 3 Hari","Rp 14.910"],["Paket Harian M (2.5GB - 4GB) - 3 Hari","Rp 17.850"],["1,5GB Reguler 24 Jam 30 Hari","Rp 21.300"],["Paket Harian L (4.5GB - 6.5GB) - 3 Hari","Rp 23.750"],["3GB Reguler 24 Jam 30 Hari","Rp 27.350"],["6GB Reguler 24 Jam 30 Hari","Rp 58.100"],["Combo 5GB All + 10GB YouTube 28 Hari","Rp 61.137"],["8GB Reguler 24 Jam 30 Hari","Rp 69.000"],["Combo 10GB All + 20GB YouTube 28 Hari","Rp 89.447"],["12GB Reguler 24 Jam 30 Hari","Rp 94.000"],["16GB Reguler 24 Jam 30 Hari","Rp 96.800"],["Combo 15GB All + 30GB YouTube 28 Hari","Rp 124.913"],["Combo 35GB All + 70GB YouTube 28 Hari","Rp 156.832"],["Combo 20GB All + 40GB YouTube 28 Hari","Rp 172.961"]]},
+{c:"pulsa",i:"https://pusatkuota.com/assets/smartfren2.png",n:"Data Smartfren",b:"Smartfren • Unlimited + Nonstop + Combo + Super Kuota",p:[["Smart Data Nonstop 10GB 1 Hari","Rp 10.949"],["Smart Unlimited FUP 1GB 1 Hari","Rp 11.650"],["Smart Unlimited FUP 10GB 1 Hari","Rp 12.015"],["Smart Data Nonstop 7GB 2 Hari","Rp 12.550"],["Smart Unlimited FUP 2GB 1 Hari","Rp 13.388"],["Smart Data Nonstop 7GB 3 Hari","Rp 14.599"],["Smart Unlimited FUP 1GB 3 Hari","Rp 14.744"],["Smart Unlimited FUP 3GB 1 Hari","Rp 14.820"],["Smart Unlimited FUP 2GB 3 Hari","Rp 14.910"],["Smart 1GB All + 2GB (01-05) + 1GB Chat 3 Hari","Rp 15.150"],["Smart Data Nonstop 2,5GB 10 Hari","Rp 15.424"],["Smart Data Nonstop 25GB 2 Hari","Rp 15.711"],["Smart Data Nonstop 10GB 3 Hari","Rp 16.560"],["Smart Unlimited FUP 3GB 3 Hari","Rp 17.335"],["Smart Data Nonstop 10GB 5 Hari","Rp 19.550"],["Smart 2GB All + 2GB (01-05) + 2GB Chat 7 Hari","Rp 19.600"],["Smart Data Nonstop 10GB 7 Hari","Rp 20.064"],["Smart Data Nonstop 10GB 7 Hari","Rp 20.089"],["Smart Unlimited FUP 5GB 1 Hari","Rp 20.138"],["Smart Unlimited FUP 1GB 7 Hari","Rp 20.446"],["Smart Data Nonstop 30GB 3 Hari","Rp 21.725"],["Smart Data Nonstop 8GB 7 Hari","Rp 22.039"],["Smart Unlimited FUP 5GB 3 Hari","Rp 22.169"],["Smart Data Nonstop 7,5GB 14 Hari","Rp 22.850"],["Smart Data Nonstop 3GB 14 Hari","Rp 24.050"],["Smart Unlimited FUP 2GB 7 Hari","Rp 25.805"],["Smart Data Nonstop 8GB 10 Hari","Rp 25.896"],["Smart Data Nonstop 60GB + 5G 3 Hari","Rp 26.890"],["Smart Data Nonstop 20GB 5 Hari","Rp 27.850"],["Smart Unlimited FUP 3GB 7 Hari","Rp 29.449"],["Smart Data Nonstop 10GB 14 Hari","Rp 32.224"],["Smart Unlimited FUP 1GB 14 Hari","Rp 36.079"],["Smart Data Nonstop 7GB 28 Hari","Rp 36.260"],["Smart Data Nonstop 12GB 14 Hari","Rp 36.299"],["Smart Data Nonstop 25GB 7 Hari","Rp 36.790"],["Smart Data Nonstop 20GB 14 Hari","Rp 37.224"],["Smart Data Nonstop 10GB 28 Hari","Rp 39.185"],["Smart Data Nonstop 9GB 28 Hari","Rp 39.225"],["Smart Data Nonstop 30GB 7 Hari","Rp 40.238"],["Smart Unlimited FUP 5GB 7 Hari","Rp 41.746"],["Kuota 14GB Reguler 30 Hari","Rp 47.470"],["Smart Data Nonstop 15GB 28 Hari","Rp 48.800"],["Smart Unlimited FUP 2GB 14 Hari","Rp 49.335"],["Smart Data Nonstop 200GB 7 Hari (Include 5G)","Rp 49.884"],["Smart Data Nonstop 16GB 28 Hari","Rp 52.586"],["Smart Data Nonstop 22GB 28 Hari","Rp 58.762"],["Smart Data Nonstop 24GB 28 Hari","Rp 62.599"],["Smart Data Nonstop 25GB 28 Hari","Rp 64.602"],["Kuota 24GB Reguler 30 Hari","Rp 65.520"],["Smart Unlimited FUP 500MB 28 Hari","Rp 67.650"],["Smart Unlimited FUP 700MB 28 Hari","Rp 67.700"],["Smart Unlimited FUP 1GB 28 Hari","Rp 67.889"],["Smart Data Nonstop 30GB 28 Hari","Rp 68.462"],["Smart 10GB + 20GB (01-05) 30 Hari","Rp 69.400"],["Smart Data Nonstop 40GB 28 Hari","Rp 76.435"],["Smart Data Nonstop 36GB 28 Hari","Rp 77.247"],["Smart Unlimited FUP 5GB 14 Hari","Rp 78.870"],["Smart Unlimited FUP 1,5GB 28 Hari","Rp 80.478"],["Smart Unlimited FUP 2GB 28 Hari","Rp 82.599"],["Smart Data Nonstop 45GB 28 Hari","Rp 86.897"],["Kuota 45GB Reguler 30 Hari","Rp 95.785"],["Smart Data Nonstop 400GB 14 Hari (Include 5G)","Rp 101.915"],["Smart Data Nonstop 100GB 28 Hari","Rp 103.449"],["Smart Data Nonstop 75GB 28 Hari","Rp 109.100"],["Smart 20GB + 40GB (01-05) 30 Hari","Rp 111.200"],["Smart Unlimited FUP 3GB 28 Hari","Rp 119.877"],["Kuota 85GB Reguler 30 Hari","Rp 134.000"],["Smart 30GB All + 60GB (01-05) 30 Hari","Rp 137.500"],["Smart Unlimited FUP 5GB 28 Hari","Rp 143.897"],["Smart Data Nonstop 150GB 28 Hari","Rp 144.128"],["Smart Unlimited FUP 4GB 28 Hari","Rp 144.471"],["Smart Data Nonstop 250GB 28 Hari","Rp 195.389"],["Smart Data Nonstop 500GB 28 Hari","Rp 195.613"],["Smart Data Nonstop 1000GB 28 Hari","Rp 291.658"],["Smart Data Nonstop 2000GB 28 Hari","Rp 483.817"]]},
+{c:"pulsa",i:"https://www.squarestore.web.id/assets/upload/home/product/66da685eae6c769622b26a2fca51efb8.png",n:"Data Axis",b:"Axis • 5 Hari + Bronet + Data Max",p:[["Axis Data 500MB All 30 Hari","Rp 7.500"],["Axis Data 1GB All 30 Hari","Rp 11.585"],["Axis Data Max 2GB + 500MB Apps 30 Hari","Rp 17.200"],["Aigo Mini 7GB 5 Hari","Rp 17.308"],["Paket Harian 5,5GB+ Lokal 5 Hari","Rp 18.100"],["Aigo Mini 10GB 5 Hari","Rp 19.315"],["Mini Axis 6,5GB Jatim - BaliNusra 5 Hari","Rp 19.850"],["Mini Axis 8GB + Bonus Aigo 5 Hari","Rp 20.476"],["Axis Data Max 3GB + 500MB Apps 30 Hari","Rp 24.100"],["Paket Harian 10GB+ Lokal 5 Hari","Rp 24.360"],["Aigo Mini 15GB 5 Hari","Rp 26.382"],["Bronet 3GB + Bonus Aigo 28 Hari","Rp 26.970"],["Mini Axis 16GB + Bonus Aigo 5 Hari","Rp 27.139"],["Mini Axis 24GB + Bonus Aigo 5 Hari","Rp 30.967"],["Aigo Mini 25GB 5 Hari","Rp 30.984"],["Axis Data Max 4GB + 1GB Apps 30 Hari","Rp 31.000"],["Paket Harian 17GB+ Lokal 5 Hari","Rp 31.150"],["Mini Axis 12GB All Jaringan 5 Hari","Rp 32.300"],["Bronet 7GB 28Hari","Rp 32.900"],["Bronet 5GB 30Hari","Rp 33.100"],["Aigo Mini 45GB 5 Hari","Rp 36.626"],["Mini Axis 50GB 5 Hari","Rp 36.938"],["Bronet 9GB 28Hari","Rp 37.100"],["Bronet 10GB 28Hari","Rp 37.749"],["Axis Data Max 5GB + 1GB Apps 30 Hari","Rp 37.900"],["Bronet 15GB 28Hari","Rp 48.867"],["Bronet 23GB 28Hari","Rp 52.679"],["Bronet 30GB 28Hari","Rp 67.964"],["Axis Data Bronet 16GB All 30hari","Rp 75.350"],["Bronet 40GB 28Hari","Rp 76.640"],["Bronet 45GB 28Hari","Rp 82.800"],["Bronet 65GB 28Hari","Rp 93.370"],["Bronet 100GB 28Hari","Rp 113.598"],["Bronet 150GB 28Hari","Rp 136.936"],["Bronet 105GB + Bonus Aigo 28Hari","Rp 169.088"],["Bronet 250GB 28 Hari","Rp 187.287"],["Bronet 400GB 28 Hari","Rp 192.097"],["Bronet 500GB 28 Hari","Rp 242.595"],["Bronet 600GB 28 Hari","Rp 278.970"]]},
+{c:"pulsa",i:"https://cf.shopee.co.id/file/id-11134207-822wh-mo0pr4jlj6dif1",n:"Data Tri",b:"Tri • Happy + All Jaringan + AON",p:[["1GB All Jaringan 10 Hari","Rp 10.300"],["3GB All Jaringan 28 Hari","Rp 23.149"],["Happy 6GB 7 Hari","Rp 23.638"],["Happy 3GB 14 Hari","Rp 23.770"],["Happy 3GB 7 Hari","Rp 23.990"],["Happy 5GB 7 Hari","Rp 23.995"],["AON 2,5GB + 0,5GB Lokal","Rp 24.200"],["Happy 9GB 7 Hari","Rp 24.995"],["4GB All Jaringan 30 Hari","Rp 26.460"],["Happy 15GB 7 Hari","Rp 27.400"],["Happy 8GB 7 Hari","Rp 27.400"],["Happy 5GB 28 Hari","Rp 27.530"],["Happy 10GB 7 Hari","Rp 27.550"],["Happy 4,5GB 28 Hari","Rp 27.650"],["AON 3,5GB + 1GB Lokal","Rp 29.558"],["AON 4GB All Jaringan","Rp 29.900"],["Happy 8GB 14 Hari","Rp 30.198"],["AON 5GB All Jaringan","Rp 31.900"],["Happy 16GB 7 Hari","Rp 31.940"],["Happy 7GB 28 Hari","Rp 32.588"],["AON 6GB All Jaringan","Rp 32.998"],["Happy 12GB 14 Hari","Rp 34.670"],["Happy 9GB 10 Hari","Rp 35.345"],["Happy 14GB 14 Hari","Rp 36.295"],["Happy 26GB 7 Hari","Rp 36.320"],["Happy 30GB 7 Hari","Rp 36.884"],["Happy 17GB 7 Hari","Rp 36.998"],["7GB All Jaringan 30 Hari","Rp 37.200"],["Happy 20GB 7 Hari","Rp 37.498"],["Happy 9GB 28 Hari","Rp 37.750"],["Happy 15GB 14 Hari","Rp 38.290"],["6GB All Jaringan 30 Hari","Rp 38.400"],["Data Harian 10GB 10 Hari","Rp 41.250"],["10GB All Jaringan 30 Hari","Rp 44.700"],["Happy 11GB 28 Hari","Rp 47.098"],["8GB All Jaringan 30 Hari","Rp 48.220"],["Happy 100GB 7 Hari","Rp 48.585"],["Happy 15GB 28 Hari","Rp 49.600"],["15GB All Jaringan 28 Hari","Rp 50.150"],["Happy 14GB 28 Hari","Rp 50.300"],["Happy 16GB 28 Hari","Rp 50.546"],["Happy 30GB 14 Hari","Rp 50.680"],["AON 9GB + 3GB Lokal","Rp 50.750"],["9GB All Jaringan 30 Hari","Rp 54.025"],["Happy 25GB 14 Hari","Rp 54.275"],["Happy 35GB 14 Hari","Rp 54.570"],["Happy 23GB 14 Hari","Rp 55.025"],["Happy 23GB 28 Hari","Rp 58.514"],["Happy 22GB 28 Hari","Rp 59.098"],["AON 12GB + 4GB Lokal","Rp 59.100"],["Tri Happy 25GB All 28 Hari","Rp 66.980"],["Happy 32GB 28 Hari","Rp 68.229"],["Happy 30GB 28 Hari","Rp 69.799"],["Happy 28GB 28 Hari","Rp 69.998"],["20GB All Jaringan 28 Hari","Rp 71.000"],["30GB All Jaringan 28 Hari","Rp 73.900"],["Happy 36GB 28 Hari","Rp 78.200"],["AON 6GB + 20GB (01-17) + Unlimited 30 Hari","Rp 84.200"],["Happy 52GB 28 Hari","Rp 84.462"],["30GB + 12GB Jatim Bali Nusra 28 Hari","Rp 84.800"],["30GB + 12GB Jabo 28 Hari","Rp 85.200"],["AON 26GB All Jaringan","Rp 85.565"],["Happy 45GB 28 Hari","Rp 87.798"],["30GB + 12GB Jateng-Jabar 28 Hari","Rp 88.900"],["Happy 70GB 28 Hari","Rp 89.766"],["50GB All Jaringan 28 Hari","Rp 93.800"],["Happy 49GB 28 Hari","Rp 95.571"],["10GB All + (Unlimited Ytb + Sosial Media) 30 Hari","Rp 98.100"],["Happy 66GB 28 Hari","Rp 98.295"],["Happy 100GB 28 Hari","Rp 110.198"],["Happy 80GB 28 Hari","Rp 110.600"],["AON 40GB + 12GB Lokal","Rp 114.650"],["Happy 156GB 28 Hari","Rp 117.859"],["Happy 75GB 60 Hari","Rp 140.955"],["Happy 150GB 28 Hari","Rp 142.110"],["75GB All Jaringan 60 Hari","Rp 142.330"],["Happy 155GB 28 Hari","Rp 152.734"],["100GB All Jaringan 28 Hari","Rp 153.400"],["Happy 300GB 28 Hari","Rp 196.176"],["Happy 250GB 28 Hari","Rp 197.940"],["Happy 200GB 28 Hari","Rp 200.950"],["Happy 130GB 28 Hari","Rp 248.550"],["Happy 175GB 180 Hari","Rp 319.250"],["175GB All Jaringan 180 Hari","Rp 329.000"],["250GB All Jaringan 365 Hari","Rp 469.500"],["Happy 1TB 360 Hari","Rp 917.560"]]}
+];let curCat='all',curItem=null,keyword='',cart=[],tmpQty={},slideIdx=0;
+function toNum(s){return parseInt(s.replace(/[^0-9]/g,''))}
+function fmt(n){return 'Rp '+n.toLocaleString('id-ID')}
+function renderGrid(){let gp=document.getElementById('gridPopuler');gp.innerHTML='';
+let showPop = !keyword;document.getElementById('populerWrap').style.display = showPop ? 'block' : 'none';
+gp.style.display = showPop ? 'grid' : 'none';
+if(showPop){D.forEach((d,idx)=>{if(!d.pop)return;let imgHtml=d.emoji?`<div class="img-emoji">${d.emoji}</div>`:`<img src="${d.i}">`;gp.innerHTML+=`<div class="card" onclick="buka(${idx})"><div class="img">${imgHtml}</div><div><b>${d.n}</b><small>${d.b}</small></div></div>`})}
+let g=document.getElementById('grid');g.innerHTML='';
+D.forEach((d,idx)=>{if(curCat!=='all'&&d.c!==curCat)return;if(keyword&&!d.n.toLowerCase().includes(keyword.toLowerCase()))return;let imgBig=d.emoji?`<div class="img-big-emoji">${d.emoji}</div>`:`<img src="${d.i}">`;g.innerHTML+=`<div class="card-big" onclick="buka(${idx})"><div class="img-big">${imgBig}</div><b>${d.n}</b><small>${d.b}</small></div>`})}
+function filterCat(c,el){curCat=c;document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderGrid()}
+function cari(v){keyword=v;renderGrid()}function buka(idx){curItem=D[idx];tmpQty={};document.getElementById('dJudul').innerText=curItem.n;document.getElementById('dSub').innerText=curItem.b;document.getElementById('qrArea').style.display='none';document.getElementById('bottomBar').style.display='block';tampilProduk(curItem.p);document.getElementById('detail').style.display='block';if(curItem.c==='voucher'){document.getElementById('lblNama').innerText='Nama';document.getElementById('inNama').placeholder='Nama';document.getElementById('lblHP').style.display='none';document.getElementById('inHP').style.display='none';document.getElementById('lblID').innerText='No WA';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Kode voucher akan dikirim ke WA tersebut, harap masukkan nomor yang terhubung ke WhatsApp';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else if(curItem.c==='pulsa'){document.getElementById('lblNama').innerText='Nama';document.getElementById('inNama').placeholder='Nama';document.getElementById('lblHP').style.display='none';document.getElementById('inHP').style.display='none';document.getElementById('lblID').innerText='Nomor Tujuan';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Orderanmu akan dikirim ke nomor tujuan ini. Pastikan nomor sudah benar & aktif (Telkomsel / Indosat / XL / Axis / Tri / Smartfren).';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else{document.getElementById('lblNama').innerText='Nama';document.getElementById('inNama').placeholder='Nama';document.getElementById('lblHP').style.display='block';document.getElementById('inHP').style.display='block';document.getElementById('lblHP').innerText='No HP';document.getElementById('inHP').placeholder='0812xxxx';document.getElementById('lblID').innerText='ID Game';document.getElementById('inID').placeholder='12345678';document.getElementById('ketVoucher').style.display='none';}}
+function tampilProduk(list){let lp=document.getElementById('listProduk');lp.innerHTML='';let ikon=curItem.c==='pulsa'?'📱':'💎';list.forEach((p,pi)=>{lp.innerHTML+=`<div class="produk" onclick="tambahKeranjang(${pi})"><div><div class="p-nama">${p[0]}</div><div class="p-harga"><div>${ikon}</div><b>${p[1]}</b></div></div><div class="p-hint">🛒 + Tambah ke Keranjang</div></div>`})}
+function tambahKeranjang(pi){let p=curItem.p[pi];let key=curItem.n+'|'+p[0];let ada=cart.find(c=>c.key===key);if(ada)ada.qty+=1;else cart.push({key:key,nama:curItem.n+' - '+p[0],harga:toNum(p[1]),qty:1});renderCart()}
+function renderCart(){let cl=document.getElementById('cartList');cl.innerHTML='';let total=0;cart.forEach((c,i)=>{total+=c.harga*c.qty;cl.innerHTML+=`<div class="cart-item"><div>${c.nama}<br><b>${fmt(c.harga*c.qty)}</b></div><div class="cart-qty"><button onclick="cartQty(${i},-1)">-</button><b>${c.qty}</b><button onclick="cartQty(${i},1)">+</button><button onclick="hapusCart(${i})" style="background:#333">✕</button></div></div>`});document.getElementById('cartEmpty').style.display=cart.length?'none':'block';document.getElementById('cartTotal').innerText=fmt(total)}
+function cartQty(i,d){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);renderCart()}
+function hapusCart(i){cart.splice(i,1);renderCart()}
+function tutup(){document.getElementById('detail').style.display='none';document.getElementById('bottomBar').style.display='none'}
+function tampilQR(){if(!cart.length){alert('Keranjang masih kosong bre! Klik card produk dulu');return}if(!document.getElementById('inNama').value){alert('Isi Nama dulu!');return}if(curItem.c!=='voucher'&&curItem.c!=='pulsa'&&!document.getElementById('inHP').value){alert('Isi No HP dulu!');return}if(!document.getElementById('inID').value){alert(curItem.c==='voucher'?'Isi No WA dulu!':curItem.c==='pulsa'?'Isi Nomor Tujuan dulu!':'Isi ID Game dulu!');return}let total=cart.reduce((a,c)=>a+c.harga*c.qty,0);document.getElementById('qrNominal').innerText=cart.map(c=>c.nama+' x'+c.qty).join(', ');document.getElementById('qrTotal').innerText='Total Bayar: '+fmt(total);document.getElementById('bottomBar').style.display='none';document.getElementById('qrArea').style.display='block';document.getElementById('detail').scrollTop=document.getElementById('detail').scrollHeight}
+const BOT_TOKEN = "9244710616:AAEdc6vwAvD395ASwxa5Zw0Nsp6XBPRcydM";
+const CHAT_ID = "1368503663";
+function kirimEmail(){  let nama=document.getElementById('inNama').value;
+  let hp=document.getElementById('inHP') ? document.getElementById('inHP').value : '';
+  let id=document.getElementById('inID') ? document.getElementById('inID').value : '';
+  let lblHP=document.getElementById('lblHP') ? document.getElementById('lblHP').innerText : 'No HP';
+  let lblID=document.getElementById('lblID') ? document.getElementById('lblID').innerText : 'ID Game';
+  let isi=cart.map(c=>c.nama+' x'+c.qty+' = '+fmt(c.harga*c.qty)).join('\n');
+  let total=cart.reduce((a,c)=>a+c.harga*c.qty,0);
+  let kode='PS-'+Math.floor(1000+Math.random()*9000);
+  let detail='Nama: '+nama;
+  let hpShow=document.getElementById('inHP');
+  let hpHidden=hpShow && (hpShow.style.display==='none' || hpShow.offsetParent===null);
+  if(!hpHidden && hp!==''){
+    detail+='\n'+lblHP+': '+hp;
+  }
+  let idShow=document.getElementById('inID');
+  let idHidden=idShow && (idShow.style.display==='none' || idShow.offsetParent===null);
+  if(!idHidden && id!==''){
+    detail+='\n'+lblID+': '+id;
+  }
+  let body='Order Baru '+kode+'\n'+isi+'\nTotal: '+fmt(total)+'\n'+detail;
+  fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:CHAT_ID,text:body})});
+  alert('Order terkirim! Kode: '+kode);
+}
+setInterval(()=>{slideIdx=(slideIdx+1)%3;document.getElementById('slides').style.transform=`translateX(-${slideIdx*100}%)`;document.querySelectorAll('#dots span').forEach((d,i)=>d.classList.toggle('on',i===slideIdx))},3000);
+function tambahBadge(){let jual=["587 RB+","1,4 JT+","400 RB+","49,2 RB+","53 RB+","120 RB+"];document.querySelectorAll('.card').forEach((c,i)=>{if(c.querySelector('.rating-gogo'))return;c.insertAdjacentHTML('afterbegin','<div class="rating-gogo">⭐ 5.0</div>');c.insertAdjacentHTML('beforeend','<div class="terjual-gogo">🔥 '+(jual[i]||"100 RB+")+' Terjual</div>')});}
+let _rg=renderGrid;renderGrid=function(){_rg();tambahBadge();}
+renderGrid();renderCart();
+</script>
+<style>
+.lb-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px}
+.lb-card{background:#111827;border:2px solid #facc15;border-radius:20px;width:100%;max-width:380px;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.6);max-height:90vh;overflow-y:auto}
+.lb-head{background:linear-gradient(90deg,#dc2626,#ef4444);color:#fff;text-align:center;padding:14px;font-weight:900;letter-spacing:1px;position:sticky;top:0}
+.lb-trophy{text-align:center;font-size:70px;margin:10px 0 0}
+.lb-sub{text-align:center;color:#facc15;font-weight:700;font-size:13px;margin:2px 10px 12px}
+.lb-row{display:flex;align-items:center;gap:10px;background:#fff;margin:8px 14px;padding:10px 12px;border-radius:12px}
+.lb-rank{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:14px;flex-shrink:0}
+.r1{background:#facc15}.r2{background:#94a3b8}.r3{background:#b45309}.r4{background:#475569}
+.lb-name{flex:1;font-weight:800;font-size:13px;color:#111}
+.lb-point{text-align:right;font-weight:900;color:#dc2626;line-height:1}
+.lb-point small{display:block;color:#666;font-size:9px;font-weight:700}
+.lb-close{background:#dc2626;color:#fff;border:0;width:calc(100% - 28px);margin:4px 14px 14px;padding:12px;border-radius:12px;font-weight:900;font-size:15px}
+/* === MULAI FIX DESKTOP - GAMPANG HAPUS === */
+@media (min-width: 768px){
+  header .logo img{
+    height: 60px !important;
+    width: auto !important;
+  }
+  .banner, .hero, .slider, .swiper, .swiper-wrapper{
+    height: 410px !important;
+    max-height: 410px !important;
+    min-height: 410px !important;
+    overflow: hidden !important;
+    margin-bottom: 12px !important;
+    padding-bottom: 0 !important;
+  }
+  .slide, .swiper-slide{
+    height: 410px !important;
+    overflow: hidden !important;
+  }
+  .banner img, .hero img, .slider img, .swiper img, .slide img, .swiper-slide img{
+    width: 100% !important;
+    height: 410px !important;
+    display: block !important;
+    object-fit: fill !important;
+    border-radius: 16px !important;
+  }
+}
+/* === SELESAI FIX DESKTOP === */
+</style>
+<script>
+function tampilDetail() {
+  let nama=document.getElementById('inNama').value;
+  let hp=document.getElementById('inHP') ? document.getElementById('inHP').value : '';
+  let id=document.getElementById('inID') ? document.getElementById('inID').value : '';
+  let lblHP=document.getElementById('lblHP') ? document.getElementById('lblHP').innerText : 'No HP';
+  let lblID=document.getElementById('lblID') ? document.getElementById('lblID').innerText : 'ID Game';
+  let isiHtml=cart.map(c=>c.nama+' x'+c.qty+' = '+fmt(c.harga*c.qty)).join('<br>');
+  let total=cart.reduce((a,c)=>a+c.harga*c.qty,0);
+  let html='<b>Nama:</b> '+nama+'<br>';
+  let hpShow=document.getElementById('inHP');
+  let hpHidden=hpShow && (hpShow.style.display==='none' || hpShow.offsetParent===null);
+  if(!hpHidden && hp!==''){ html+='<b>'+lblHP+':</b> '+hp+'<br>'; }
+  let idShow=document.getElementById('inID');
+  let idHidden=idShow && (idShow.style.display==='none' || idShow.offsetParent===null);
+  if(!idHidden && id!==''){ html+='<b>'+lblID+':</b> '+id+'<br>'; }
+  html+='<b>Pesanan:</b><br>'+isiHtml+'<br><b>Total:</b> '+fmt(total)+'<br><b>Status:</b> Menunggu Antrian';
+  document.getElementById('isi-detail-pesanan').innerHTML=html;
+  document.getElementById('detail-pesanan').style.display='block';
+}
+</script>
+</body>
+ </html>
