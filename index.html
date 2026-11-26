@@ -1426,11 +1426,22 @@ function escHtml(str) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 }
+
+function ekstrakKodeItem(c) {
+  if (c?.kode) return String(c.kode).trim();
+  const teks = String(c?.nama ?? '').trim();
+  const matchBracket = teks.match(/\[([A-Za-z0-9_-]+)\]/);
+  if (matchBracket) return matchBracket[1];
+  const segments = teks.split(' - ');
+  if (segments.length >= 3) return segments[1].trim();
+  if (segments.length === 2) return segments[0].trim();
+  return teks || 'ITEM';
+}
+
 function formatItemTelegram(c) {
   let teks = String(c.nama ?? '').trim();
   const qty = escHtml(c.qty);
   const hargaFmt = escHtml(fmt(c.harga * c.qty));
-  // Jika item punya properti c.kode khusus
   if (c.kode) {
     const kodeClean = String(c.kode).trim();
     const escapedKode = kodeClean.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -1441,14 +1452,12 @@ function formatItemTelegram(c) {
     }
     return `<code>${escHtml(kodeClean)}</code> - ${escHtml(teks)} x${qty} = ${hargaFmt}`;
   }
-  // 1. Cek pola kode di dalam kurung siku, misal [MFF10]
   const matchBracket = teks.match(/\[([A-Za-z0-9_-]+)\]/);
   if (matchBracket) {
     const kodeInside = matchBracket[1];
     const parts = teks.split(`[${kodeInside}]`);
     return `${escHtml(parts[0])}[<code>${escHtml(kodeInside)}</code>]${escHtml(parts.slice(1).join(`[${kodeInside}]`))} x${qty} = ${hargaFmt}`;
   }
-  // 2. Cek pola "Kategori - KODE - Nama Item", misal "Mobile Legends - MLBB3 - 3 (3+0) Diamond"
   const segments = teks.split(' - ');
   if (segments.length >= 3) {
     const kategori = escHtml(segments[0].trim());
@@ -1456,7 +1465,6 @@ function formatItemTelegram(c) {
     const sisaNama = escHtml(segments.slice(2).join(' - ').trim());
     return `${kategori} - <code>${kodeTengah}</code> - ${sisaNama} x${qty} = ${hargaFmt}`;
   }
-  // 3. Fallback jika hanya "KODE - Nama Item"
   if (segments.length === 2) {
     const kodeDepan = escHtml(segments[0].trim());
     const namaItem = escHtml(segments[1].trim());
@@ -1464,6 +1472,7 @@ function formatItemTelegram(c) {
   }
   return `${escHtml(teks)} x${qty} = ${hargaFmt}`;
 }
+
 async function kirimEmail() {
   if (!Array.isArray(cart) || cart.length === 0) {
     alert('Keranjang masih kosong.');
@@ -1494,27 +1503,122 @@ async function kirimEmail() {
     `Total: <b>${escHtml(fmt(total))}</b>\n` +
     `${detail}\n` +
     `Status: ⏳ Belum Diproses`;
-  try
-  
- {const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+
+  const ringkasItems = cart
+    .map((c) => `${ekstrakKodeItem(c)}x${c.qty || 1}`)
+    .join(',');
+
+  const baseUrl = 'https://stokcoceh4355-netizen.github.io/pixel-gaming/';
+  const buatSimUrl = (msgId = '') =>
+    `${baseUrl}?sim=1` +
+    `&order=${encodeURIComponent(kode)}` +
+    `&msg_id=${encodeURIComponent(msgId)}` +
+    `&nama=${encodeURIComponent(nama)}` +
+    `&id=${encodeURIComponent(id)}` +
+    `&hp=${encodeURIComponent(hp)}` +
+    `&total=${encodeURIComponent(total)}` +
+    `&items=${encodeURIComponent(ringkasItems)}`;
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         chat_id: CHAT_ID,
         text: body,
-        parse_mode: 'HTML'
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              {
+                text: '⚡ Proses Order',
+                url: buatSimUrl('')
+              }
+            ]
+          ]
+        }
       })
     });
     const data = await res.json();
     if (!res.ok || !data.ok) {
       throw new Error(data.description || 'Gagal mengirim ke Telegram');
     }
+
+    const msgId = data.result?.message_id;
+    if (msgId) {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageReplyMarkup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          message_id: msgId,
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: '⚡ Proses Order',
+                  url: buatSimUrl(msgId)
+                }
+              ]
+            ]
+          }
+        })
+      });
+    }
+
     alert('Order terkirim! Kode: ' + kode);
   } catch (err) {
     console.error(err);
     alert('Gagal mengirim order ke Telegram. Silakan coba lagi.');
   }
 }
+
+async function prosesOrderDariUrl() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('sim') !== '1') return;
+
+  const orderKode = params.get('order') || '-';
+  const msgId = params.get('msg_id');
+  const nama = params.get('nama') || '-';
+  const idTujuan = params.get('id') || '';
+  const hp = params.get('hp') || '';
+  const total = Number(params.get('total') || 0);
+  const items = params.get('items') || '-';
+
+  let detailUpdate = `Nama: ${escHtml(nama)}`;
+  if (hp) detailUpdate += `\nNo HP: <code>${escHtml(hp)}</code>`;
+  if (idTujuan) detailUpdate += `\nID Game: <code>${escHtml(idTujuan)}</code>`;
+
+  const teksDiproses =
+    `<b>Order ${escHtml(orderKode)}</b>\n` +
+    `Item: <code>${escHtml(items)}</code>\n` +
+    `Total: <b>${escHtml(fmt(total))}</b>\n` +
+    `${detailUpdate}\n` +
+    `Status: ✅ Pesanan sudah di proses`;
+
+  if (msgId && typeof BOT_TOKEN !== 'undefined' && typeof CHAT_ID !== 'undefined') {
+    try {
+      await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          message_id: Number(msgId),
+          text: teksDiproses,
+          parse_mode: 'HTML',
+          reply_markup: { inline_keyboard: [] }
+        })
+      });
+    } catch (err) {
+      console.error('Gagal mengedit pesan Telegram:', err);
+    }
+  }
+
+  alert(`Order ${orderKode}: Pesanan sudah di proses`);
+}
+
+window.addEventListener('DOMContentLoaded', prosesOrderDariUrl);
+
 setInterval(() => {
   const slidesEl = document.getElementById('slides');
   if (!slidesEl) return;
