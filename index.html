@@ -1416,7 +1416,42 @@ function resetKeBeranda(el) {
   }
 }
 
-function tampilQR(){if(!cart.length){alert('Keranjang masih kosong bre! Klik card produk dulu');return}if(!document.getElementById('inNama').value){alert('Isi Nama dulu!');return}if(curItem.c!=='voucher'&&curItem.c!=='pulsa'&&!document.getElementById('inHP').value){alert('Isi No HP dulu!');return}if(!document.getElementById('inID').value){alert(curItem.c==='voucher'?'Isi No WA dulu!':curItem.c==='pulsa'?'Isi Nomor Tujuan dulu!':'Isi ID Game dulu!');return}let total=cart.reduce((a,c)=>a+c.harga*c.qty,0);document.getElementById('qrNominal').innerText=cart.map(c=>c.nama+' x'+c.qty).join(', ');document.getElementById('qrTotal').innerText='Total Bayar: '+fmt(total);document.getElementById('bottomBar').style.display='none';document.getElementById('qrArea').style.display='block';document.getElementById('detail').scrollTop=document.getElementById('detail').scrollHeight}
+function tampilQR() {
+  if (!cart.length) {
+    alert('Keranjang masih kosong bre! Klik card produk dulu');
+    return;
+  }
+  if (!document.getElementById('inNama').value) {
+    alert('Isi Nama dulu!');
+    return;
+  }
+  if (curItem.c !== 'voucher' && curItem.c !== 'pulsa' && !document.getElementById('inHP').value) {
+    alert('Isi No HP dulu!');
+    return;
+  }
+  if (!document.getElementById('inID').value) {
+    alert(curItem.c === 'voucher' ? 'Isi No WA dulu!' : curItem.c === 'pulsa' ? 'Isi Nomor Tujuan dulu!' : 'Isi ID Game dulu!');
+    return;
+  }
+
+  let total = cart.reduce((a, c) => a + c.harga * c.qty, 0);
+  document.getElementById('qrNominal').innerText = cart.map(c => c.nama + ' x' + c.qty).join(', ');
+  document.getElementById('qrTotal').innerText = 'Total Bayar: ' + fmt(total);
+  document.getElementById('bottomBar').style.display = 'none';
+
+  const qrArea = document.getElementById('qrArea');
+  const detail = document.getElementById('detail');
+
+  qrArea.style.display = 'block';
+
+  // Reset scroll kontainer ke atas, lalu arahkan tepat ke #qrArea
+  if (detail) detail.scrollTop = 0;
+  setTimeout(() => {
+    qrArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, 50);
+}
+
 const BOT_TOKEN = "9244710616:AAEdc6vwAvD395ASwxa5Zw0Nsp6XBPRcydM";
 const CHAT_ID = "1368503663";
 
