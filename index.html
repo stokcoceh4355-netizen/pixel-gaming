@@ -261,16 +261,11 @@ setInterval(() => {
         <p id="qrTotal" style="font-weight:900;font-size:19px;color:#fff;margin:0"></p>
       </div>
     </div>
-    <div style="text-align:left; font-size:13px; line-height:1.6; margin-top:12px;">
-      <b>Selesaikan pembayaran dengan 4 langkah mudah:</b><br>
-      1. Simpan gambar QRIS di HP Anda<br>
-      2. Buka aplikasi dompet digital Anda<br>
-      3. Pilih fitur Scan QR atau Upload QR<br>
-      4. Upload gambar QRIS ini, lalu ikuti instruksi
-    </div>
-    <p style="font-size:11px;opacity:.6;margin-top:10px">Setelah bayar, klik tombol di bawah ya!</p>
-  </div>
+     <p style="font-size:13px;font-weight:700;color:#fde047;text-align:center;margin-top:12px;margin-bottom:8px;">
+      Sudah bayar? Klik tombol di bawah agar pesanan diproses!
+    </p>
 </div>
+
 <script>
 function downloadQR(e){
   e.preventDefault();
@@ -284,7 +279,7 @@ function downloadQR(e){
   }).catch(()=>{ window.open(url, '_blank'); });
 }
 </script>
-<button onclick="kirimEmail(); tampilDetail();" style="width:100%;padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-weight:bold;margin-top:10px">CEK PESANAN SAYA</button>
+<button onclick="kirimEmail(); tampilDetail();" style="width:100%;padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-weight:bold;margin-top:10px">KONFIRMASI SUDAH BAYAR</button>
 <div id="detail-pesanan" style="display:none; background:#fff; border:1px solid #ddd; padding:12px; border-radius:8px; margin-top:12px; font-size:13px; color:#333; line-height:1.8; text-align:left;">
 <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:14px;"><span>✅ Detail Pesanan</span><button onclick="document.getElementById('detail-pesanan').style.display='none'" style="background:#eee; border:none; border-radius:20px; padding:4px 10px; font-size:12px; font-weight:bold; cursor:pointer;">✕ Tutup</button></div>
 <div id="isi-detail-pesanan"></div>
@@ -1354,11 +1349,16 @@ function formatItemTelegram(c) {
   return `${escHtml(teks)} x${qty} = ${hargaFmt}`;
 }
 
+let sedangKirimOrder = false;
+
 async function kirimEmail() {
+  if (sedangKirimOrder) return;
   if (!Array.isArray(cart) || cart.length === 0) {
     alert('Keranjang masih kosong.');
     return;
   }
+  sedangKirimOrder = true;
+  
   let nama = document.getElementById('inNama')?.value.trim() || '';
   let hpEl = document.getElementById('inHP');
   let idEl = document.getElementById('inID');
