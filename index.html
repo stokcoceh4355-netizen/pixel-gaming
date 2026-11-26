@@ -1419,29 +1419,112 @@ function resetKeBeranda(el) {
 function tampilQR(){if(!cart.length){alert('Keranjang masih kosong bre! Klik card produk dulu');return}if(!document.getElementById('inNama').value){alert('Isi Nama dulu!');return}if(curItem.c!=='voucher'&&curItem.c!=='pulsa'&&!document.getElementById('inHP').value){alert('Isi No HP dulu!');return}if(!document.getElementById('inID').value){alert(curItem.c==='voucher'?'Isi No WA dulu!':curItem.c==='pulsa'?'Isi Nomor Tujuan dulu!':'Isi ID Game dulu!');return}let total=cart.reduce((a,c)=>a+c.harga*c.qty,0);document.getElementById('qrNominal').innerText=cart.map(c=>c.nama+' x'+c.qty).join(', ');document.getElementById('qrTotal').innerText='Total Bayar: '+fmt(total);document.getElementById('bottomBar').style.display='none';document.getElementById('qrArea').style.display='block';document.getElementById('detail').scrollTop=document.getElementById('detail').scrollHeight}
 const BOT_TOKEN = "9244710616:AAEdc6vwAvD395ASwxa5Zw0Nsp6XBPRcydM";
 const CHAT_ID = "1368503663";
-function kirimEmail(){  let nama=document.getElementById('inNama').value;
-  let hp=document.getElementById('inHP') ? document.getElementById('inHP').value : '';
-  let id=document.getElementById('inID') ? document.getElementById('inID').value : '';
-  let lblHP=document.getElementById('lblHP') ? document.getElementById('lblHP').innerText : 'No HP';
-  let lblID=document.getElementById('lblID') ? document.getElementById('lblID').innerText : 'ID Game';
-  let isi=cart.map(c=>c.nama+' x'+c.qty+' = '+fmt(c.harga*c.qty)).join('\n');
-  let total=cart.reduce((a,c)=>a+c.harga*c.qty,0);
-  let kode='PS-'+Math.floor(1000+Math.random()*9000);
-  let detail='Nama: '+nama;
-  let hpShow=document.getElementById('inHP');
-  let hpHidden=hpShow && (hpShow.style.display==='none' || hpShow.offsetParent===null);
-  if(!hpHidden && hp!==''){
-    detail+='\n'+lblHP+': '+hp;
+
+function escHtml(str) {
+  return String(str ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+function formatItemTelegram(c) {
+  let teks = String(c.nama ?? '').trim();
+  const qty = escHtml(c.qty);
+  const hargaFmt = escHtml(fmt(c.harga * c.qty));
+  // Jika item punya properti c.kode khusus
+  if (c.kode) {
+    const kodeClean = String(c.kode).trim();
+    const escapedKode = kodeClean.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const regexKode = new RegExp(`\\b${escapedKode}\\b`);
+    if (regexKode.test(teks)) {
+      teks = teks.replace(regexKode, `<code>${escHtml(kodeClean)}</code>`);
+      return `${escHtml(teks).replace(`&lt;code&gt;${escHtml(kodeClean)}&lt;/code&gt;`, `<code>${escHtml(kodeClean)}</code>`)} x${qty} = ${hargaFmt}`;
+    }
+    return `<code>${escHtml(kodeClean)}</code> - ${escHtml(teks)} x${qty} = ${hargaFmt}`;
   }
-  let idShow=document.getElementById('inID');
-  let idHidden=idShow && (idShow.style.display==='none' || idShow.offsetParent===null);
-  if(!idHidden && id!==''){
-    detail+='\n'+lblID+': '+id;
+  // 1. Cek pola kode di dalam kurung siku, misal [MFF10]
+  const matchBracket = teks.match(/\[([A-Za-z0-9_-]+)\]/);
+  if (matchBracket) {
+    const kodeInside = matchBracket[1];
+    const parts = teks.split(`[${kodeInside}]`);
+    return `${escHtml(parts[0])}[<code>${escHtml(kodeInside)}</code>]${escHtml(parts.slice(1).join(`[${kodeInside}]`))} x${qty} = ${hargaFmt}`;
   }
-  let body='Order Baru '+kode+'\n'+isi+'\nTotal: '+fmt(total)+'\n'+detail;
-  fetch('https://api.telegram.org/bot'+BOT_TOKEN+'/sendMessage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({chat_id:CHAT_ID,text:body})});
-  alert('Order terkirim! Kode: '+kode);}
-setInterval(()=>{slideIdx=(slideIdx+1)%3;document.getElementById('slides').style.transform=`translateX(-${slideIdx*100}%)`;document.querySelectorAll('#dots span').forEach((d,i)=>d.classList.toggle('on',i===slideIdx))},3000);
+  // 2. Cek pola "Kategori - KODE - Nama Item", misal "Mobile Legends - MLBB3 - 3 (3+0) Diamond"
+  const segments = teks.split(' - ');
+  if (segments.length >= 3) {
+    const kategori = escHtml(segments[0].trim());
+    const kodeTengah = escHtml(segments[1].trim());
+    const sisaNama = escHtml(segments.slice(2).join(' - ').trim());
+    return `${kategori} - <code>${kodeTengah}</code> - ${sisaNama} x${qty} = ${hargaFmt}`;
+  }
+  // 3. Fallback jika hanya "KODE - Nama Item"
+  if (segments.length === 2) {
+    const kodeDepan = escHtml(segments[0].trim());
+    const namaItem = escHtml(segments[1].trim());
+    return `<code>${kodeDepan}</code> - ${namaItem} x${qty} = ${hargaFmt}`;
+  }
+  return `${escHtml(teks)} x${qty} = ${hargaFmt}`;
+}
+async function kirimEmail() {
+  if (!Array.isArray(cart) || cart.length === 0) {
+    alert('Keranjang masih kosong.');
+    return;
+  }
+  let nama = document.getElementById('inNama')?.value.trim() || '';
+  let hpEl = document.getElementById('inHP');
+  let idEl = document.getElementById('inID');
+  let hp = hpEl ? hpEl.value.trim() : '';
+  let id = idEl ? idEl.value.trim() : '';
+  let lblHP = document.getElementById('lblHP')?.innerText.trim() || 'No HP';
+  let lblID = document.getElementById('lblID')?.innerText.trim() || 'ID Game';
+  let isi = cart.map(formatItemTelegram).join('\n');
+  let total = cart.reduce((a, c) => a + c.harga * c.qty, 0);
+  let kode = 'PS-' + Math.floor(1000 + Math.random() * 9000);
+  let detail = `Nama: ${escHtml(nama)}`;
+  let hpHidden = hpEl && (hpEl.style.display === 'none' || hpEl.offsetParent === null);
+  if (!hpHidden && hp !== '') {
+    detail += `\n${escHtml(lblHP)}: <code>${escHtml(hp)}</code>`;
+  }
+  let idHidden = idEl && (idEl.style.display === 'none' || idEl.offsetParent === null);
+  if (!idHidden && id !== '') {
+    detail += `\n${escHtml(lblID)}: <code>${escHtml(id)}</code>`;
+  }
+  let body =
+    `<b>Order Baru ${escHtml(kode)}</b>\n` +
+    `${isi}\n` +
+    `Total: <b>${escHtml(fmt(total))}</b>\n` +
+    `${detail}\n` +
+    `Status: ⏳ Belum Diproses`;
+  try
+  
+ {const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text: body,
+        parse_mode: 'HTML'
+      })
+    });
+    const data = await res.json();
+    if (!res.ok || !data.ok) {
+      throw new Error(data.description || 'Gagal mengirim ke Telegram');
+    }
+    alert('Order terkirim! Kode: ' + kode);
+  } catch (err) {
+    console.error(err);
+    alert('Gagal mengirim order ke Telegram. Silakan coba lagi.');
+  }
+}
+setInterval(() => {
+  const slidesEl = document.getElementById('slides');
+  if (!slidesEl) return;
+  slideIdx = (slideIdx + 1) % 3;
+  slidesEl.style.transform = `translateX(-${slideIdx * 100}%)`;
+  document.querySelectorAll('#dots span').forEach((d, i) => {
+    d.classList.toggle('on', i === slideIdx);
+  });
+}, 3000);
+
 function tambahBadge(){let jual=["587 RB+","1,4 JT+","400 RB+","49,2 RB+","53 RB+","120 RB+"];document.querySelectorAll('.card').forEach((c,i)=>{if(c.querySelector('.rating-gogo'))return;c.insertAdjacentHTML('afterbegin','<div class="rating-gogo">⭐ 5.0</div>');c.insertAdjacentHTML('beforeend','<div class="terjual-gogo">🔥 '+(jual[i]||"100 RB+")+' Terjual</div>')});}
 let _rg=renderGrid;renderGrid=function(){_rg();tambahBadge();}
 renderGrid();renderCart();
