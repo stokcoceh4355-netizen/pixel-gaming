@@ -279,7 +279,7 @@ function downloadQR(e){
   }).catch(()=>{ window.open(url, '_blank'); });
 }
 </script>
-<button onclick="kirimEmail(); tampilDetail();" style="width:100%;padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-weight:bold;margin-top:10px">KONFIRMASI SUDAH BAYAR</button>
+<button id="btnKonfirmasiBayar" onclick="kirimEmail(); tampilDetail();" style="width:100%;padding:12px;background:#25D366;color:#fff;border:none;border-radius:10px;font-weight:bold;margin-top:10px">KONFIRMASI SUDAH BAYAR</button>
 <div id="detail-pesanan" style="display:none; background:#fff; border:1px solid #ddd; padding:12px; border-radius:8px; margin-top:12px; font-size:13px; color:#333; line-height:1.8; text-align:left;">
 <div style="display:flex; justify-content:space-between; align-items:center; font-weight:bold; font-size:14px;"><span>✅ Detail Pesanan</span><button onclick="document.getElementById('detail-pesanan').style.display='none'" style="background:#eee; border:none; border-radius:20px; padding:4px 10px; font-size:12px; font-weight:bold; cursor:pointer;">✕ Tutup</button></div>
 <div id="isi-detail-pesanan"></div>
@@ -1168,7 +1168,7 @@ gp.style.display = showPop ? 'grid' : 'none';if(showPop){D.forEach((d,idx)=>{if(
 let g=document.getElementById('grid');g.innerHTML='';
 D.forEach((d,idx)=>{if(curCat!=='all'&&d.c!==curCat)return;if(keyword&&!d.n.toLowerCase().includes(keyword.toLowerCase()))return;let imgBig=d.emoji?`<div class="img-big-emoji">${d.emoji}</div>`:`<img src="${d.i}">`;g.innerHTML+=`<div class="card-big" onclick="buka(${idx})"><div class="img-big">${imgBig}</div><b>${d.n}</b><small>${d.b}</small></div>`})}
 function filterCat(c,el){curCat=c;document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderGrid()}
-function cari(v){keyword=v;renderGrid()}function buka(idx){curItem=D[idx];tmpQty={};document.getElementById('dJudul').innerText=curItem.n;document.getElementById('dSub').innerText=curItem.b;document.getElementById('qrArea').style.display='none';document.getElementById('bottomBar').style.display='block';tampilProduk(curItem.p);document.getElementById('detail').style.display='block';if(curItem.c==='voucher'){document.getElementById('lblNama').innerText='Nama';document.getElementById('inNama').placeholder='Nama';document.getElementById('lblHP').style.display='none';document.getElementById('inHP').style.display='none';document.getElementById('lblID').innerText='No WA';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Kode voucher akan dikirim ke WA tersebut, harap masukkan nomor yang terhubung ke WhatsApp';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else if(curItem.c==='pulsa'){document.getElementById('lblNama').innerText='Nama';document.getElementById('inNama').placeholder='Nama';document.getElementById('lblHP').style.display='none';document.getElementById('inHP').style.display='none';document.getElementById('lblID').innerText='Nomor Tujuan';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Orderanmu akan dikirim ke nomor tujuan ini. Pastikan nomor sudah benar & aktif (Telkomsel / Indosat / XL / Axis / Tri / Smartfren).';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else{document.getElementById('lblNama').innerText='Nama';document.getElementById('inNama').placeholder='Nama';document.getElementById('lblHP').style.display='block';document.getElementById('inHP').style.display='block';document.getElementById('lblHP').innerText='No HP';document.getElementById('inHP').placeholder='0812xxxx';document.getElementById('lblID').innerText='ID Game';document.getElementById('inID').placeholder='12345678';document.getElementById('ketVoucher').style.display='none';}}
+function cari(v){keyword=v;renderGrid()}function buka(idx){curItem=D[idx];tmpQty={};document.getElementById('dJudul').innerText=curItem.n;document.getElementById('dSub').innerText=curItem.b;document.getElementById('qrArea').style.display='none';document.getElementById('bottomBar').style.display='block';tampilProduk(curItem.p);document.getElementById('detail').style.display='block';document.getElementById('lblNama').style.display='none';document.getElementById('inNama').style.display='none';document.getElementById('lblHP').style.display='none';document.getElementById('inHP').style.display='none';if(curItem.c==='voucher'){document.getElementById('lblID').innerText='No WA';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Kode voucher akan dikirim ke WA tersebut, harap masukkan nomor yang terhubung ke WhatsApp';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else if(curItem.c==='pulsa'){document.getElementById('lblID').innerText='Nomor Tujuan';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Orderanmu akan dikirim ke nomor tujuan ini. Pastikan nomor sudah benar & aktif (Telkomsel / Indosat / XL / Axis / Tri / Smartfren).';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else{document.getElementById('lblID').innerText='ID Game';document.getElementById('inID').placeholder='12345678';document.getElementById('ketVoucher').style.display='none';}}
 function tampilProduk(list) {
   let lp = document.getElementById('listProduk');
   lp.innerHTML = '';
@@ -1289,14 +1289,6 @@ function tampilQR() {
     alert('Keranjang masih kosong bre! Klik card produk dulu');
     return;
   }
-  if (!document.getElementById('inNama').value) {
-    alert('Isi Nama dulu!');
-    return;
-  }
-  if (curItem.c !== 'voucher' && curItem.c !== 'pulsa' && !document.getElementById('inHP').value) {
-    alert('Isi No HP dulu!');
-    return;
-  }
   if (!document.getElementById('inID').value) {
     alert(curItem.c === 'voucher' ? 'Isi No WA dulu!' : curItem.c === 'pulsa' ? 'Isi Nomor Tujuan dulu!' : 'Isi ID Game dulu!');
     return;
@@ -1320,6 +1312,7 @@ function tampilQR() {
   }, 50);
 }
 
+
 const BOT_TOKEN = "9244710616:AAEdc6vwAvD395ASwxa5Zw0Nsp6XBPRcydM";
 const CHAT_ID = "1368503663";
 
@@ -1328,17 +1321,6 @@ function escHtml(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
-}
-
-function ekstrakKodeItem(c) {
-  if (c?.kode) return String(c.kode).trim();
-  const teks = String(c?.nama ?? '').trim();
-  const matchBracket = teks.match(/\[([A-Za-z0-9_-]+)\]/);
-  if (matchBracket) return matchBracket[1];
-  const segments = teks.split(' - ');
-  if (segments.length >= 3) return segments[1].trim();
-  if (segments.length === 2) return segments[0].trim();
-  return teks || 'ITEM';
 }
 
 function formatItemTelegram(c) {
@@ -1385,49 +1367,44 @@ async function kirimEmail() {
     return;
   }
   sedangKirimOrder = true;
-  
-  let nama = document.getElementById('inNama')?.value.trim() || '';
-  let hpEl = document.getElementById('inHP');
-  let idEl = document.getElementById('inID');
-  let hp = hpEl ? hpEl.value.trim() : '';
-  let id = idEl ? idEl.value.trim() : '';
-  let lblHP = document.getElementById('lblHP')?.innerText.trim() || 'No HP';
-  let lblID = document.getElementById('lblID')?.innerText.trim() || 'ID Game';
-  let isi = cart.map(formatItemTelegram).join('\n');
-  let total = cart.reduce((a, c) => a + c.harga * c.qty, 0);
-  let kode = 'PS-' + Math.floor(1000 + Math.random() * 9000);
-  let detail = `Nama: ${escHtml(nama)}`;
-  let hpHidden = hpEl && (hpEl.style.display === 'none' || hpEl.offsetParent === null);
-  if (!hpHidden && hp !== '') {
-    detail += `\n${escHtml(lblHP)}: <code>${escHtml(hp)}</code>`;
+  const btnKonfirmasi = document.getElementById('btnKonfirmasiBayar');
+  if (btnKonfirmasi) {
+    btnKonfirmasi.disabled = true;
+    btnKonfirmasi.dataset.teksAsli = btnKonfirmasi.textContent;
+    btnKonfirmasi.textContent = 'MENGIRIM...';
+    btnKonfirmasi.style.opacity = '0.6';
+    btnKonfirmasi.style.cursor = 'not-allowed';
   }
-  let idHidden = idEl && (idEl.style.display === 'none' || idEl.offsetParent === null);
-  if (!idHidden && id !== '') {
-    detail += `\n${escHtml(lblID)}: <code>${escHtml(id)}</code>`;
-  }
-  let body =
-    `<b>Order Baru ${escHtml(kode)}</b>\n` +
-    `${isi}\n` +
-    `Total: <b>${escHtml(fmt(total))}</b>\n` +
-    `${detail}\n` +
-    `Status: ⏳ Belum Diproses`;
-
-  const ringkasItems = cart
-    .map((c) => `${ekstrakKodeItem(c)}x${c.qty || 1}`)
-    .join(',');
-
-  const baseUrl = 'https://stokcoceh4355-netizen.github.io/pixel-gaming/';
-  const buatSimUrl = (msgId = '') =>
-    `${baseUrl}?sim=1` +
-    `&order=${encodeURIComponent(kode)}` +
-    `&msg_id=${encodeURIComponent(msgId)}` +
-    `&nama=${encodeURIComponent(nama)}` +
-    `&id=${encodeURIComponent(id)}` +
-    `&hp=${encodeURIComponent(hp)}` +
-    `&total=${encodeURIComponent(total)}` +
-    `&items=${encodeURIComponent(ringkasItems)}`;
 
   try {
+    let idEl = document.getElementById('inID');
+    let id = idEl ? idEl.value.trim() : '';
+    let lblID = document.getElementById('lblID')?.innerText.trim() || 'ID Game';
+    let isi = cart.map(formatItemTelegram).join('\n');
+    let total = cart.reduce((a, c) => a + c.harga * c.qty, 0);
+    let kode = 'PS-' + Math.floor(1000 + Math.random() * 9000);
+    let detail = `${escHtml(lblID)}: <code>${escHtml(id)}</code>`;
+
+    let body =
+      `<b>Order Baru ${escHtml(kode)}</b>\n` +
+      `${isi}\n` +
+      `Total: <b>${escHtml(fmt(total))}</b>\n` +
+      `${detail}\n` +
+      `Status: ⏳ Belum Diproses`;
+
+    const ringkasItems = cart
+      .map((c) => `${c.kode || c.id || c.nama || 'ITEM'}x${c.qty || 1}`)
+      .join(',');
+
+    const baseUrl = 'https://stokcoceh4355-netizen.github.io/pixel-gaming/';
+    const buatSimUrl = (msgId = '') =>
+      `${baseUrl}?sim=1` +
+      `&order=${encodeURIComponent(kode)}` +
+      `&msg_id=${encodeURIComponent(msgId)}` +
+      `&id=${encodeURIComponent(id)}` +
+      `&total=${encodeURIComponent(total)}` +
+      `&items=${encodeURIComponent(ringkasItems)}`;
+
     const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1474,10 +1451,25 @@ async function kirimEmail() {
       });
     }
 
+    if (btnKonfirmasi) {
+      btnKonfirmasi.disabled = true;
+      btnKonfirmasi.textContent = 'SUDAH TERKIRIM ✓';
+      btnKonfirmasi.style.opacity = '0.85';
+      btnKonfirmasi.style.cursor = 'not-allowed';
+    }
+
     alert('Order terkirim! Kode: ' + kode);
   } catch (err) {
     console.error(err);
-    alert('Gagal mengirim order ke Telegram. Silakan coba lagi.');
+    if (btnKonfirmasi) {
+      btnKonfirmasi.disabled = false;
+      if (btnKonfirmasi.dataset.teksAsli) btnKonfirmasi.textContent = btnKonfirmasi.dataset.teksAsli;
+      btnKonfirmasi.style.opacity = '1';
+      btnKonfirmasi.style.cursor = 'pointer';
+    }
+    alert('Gagal kirim Telegram: ' + (err?.message || err));
+  } finally {
+    sedangKirimOrder = false;
   }
 }
 
@@ -1487,21 +1479,17 @@ async function prosesOrderDariUrl() {
 
   const orderKode = params.get('order') || '-';
   const msgId = params.get('msg_id');
-  const nama = params.get('nama') || '-';
   const idTujuan = params.get('id') || '';
-  const hp = params.get('hp') || '';
   const total = Number(params.get('total') || 0);
   const items = params.get('items') || '-';
 
-  let detailUpdate = `Nama: ${escHtml(nama)}`;
-  if (hp) detailUpdate += `\nNo HP: <code>${escHtml(hp)}</code>`;
-  if (idTujuan) detailUpdate += `\nID Game: <code>${escHtml(idTujuan)}</code>`;
+  let detailUpdate = idTujuan ? `ID Game: <code>${escHtml(idTujuan)}</code>` : '';
 
   const teksDiproses =
     `<b>Order ${escHtml(orderKode)}</b>\n` +
     `Item: <code>${escHtml(items)}</code>\n` +
     `Total: <b>${escHtml(fmt(total))}</b>\n` +
-    `${detailUpdate}\n` +
+    `${detailUpdate ? detailUpdate + '\n' : ''}` +
     `Status: ✅ Pesanan sudah di proses`;
 
   if (msgId && typeof BOT_TOKEN !== 'undefined' && typeof CHAT_ID !== 'undefined') {
@@ -1536,6 +1524,7 @@ setInterval(() => {
     d.classList.toggle('on', i === slideIdx);
   });
 }, 3000);
+
 
 function tambahBadge(){let jual=["587 RB+","1,4 JT+","400 RB+","49,2 RB+","53 RB+","120 RB+"];document.querySelectorAll('.card').forEach((c,i)=>{if(c.querySelector('.rating-gogo'))return;c.insertAdjacentHTML('afterbegin','<div class="rating-gogo">⭐ 5.0</div>');c.insertAdjacentHTML('beforeend','<div class="terjual-gogo">🔥 '+(jual[i]||"100 RB+")+' Terjual</div>')});}
 let _rg=renderGrid;renderGrid=function(){_rg();tambahBadge();}
