@@ -1172,7 +1172,6 @@ function cari(v){keyword=v;renderGrid()}function buka(idx){curItem=D[idx];tmpQty
 function tampilProduk(list) {
   let lp = document.getElementById('listProduk');
   lp.innerHTML = '';
-  let ikon = curItem.c === 'pulsa' ? '📱' : '💎';
 
   list.forEach((p, pi) => {
     let hargaJual = parseInt(p[1].replace(/\D/g, '')) || 0;
@@ -1185,22 +1184,50 @@ function tampilProduk(list) {
     let hemat = hargaAsli - hargaJual;
     let teksCoret = p[2] ? p[2] : `Rp ${hargaAsli.toLocaleString('id-ID')}`;
 
-    let htmlCoret = hemat > 0 ? `<div class="p-coret">${teksCoret}</div>` : '';
+    // Ikon otomatis per kategori & jenis item pass/pack
+    let isPass = /pass|pack|twilight/i.test(p[0]);
+    let ikon = curItem.c === 'pulsa' ? '📱' : (isPass ? '🎟️' : '💎');
+
+    // Pisahkan [KODE] agar tidak menumpuk di judul utama
+    let matchKode = p[0].match(/^\[([^\]]+)\]\s*(.+)$/);
+    let kodeSku = matchKode ? matchKode[1].trim() : '';
+    let namaBersih = matchKode ? matchKode[2].trim() : p[0];
+
+    // Opsional: tandai item populer dari index atau kode SKU
+    let populerSkus = ['MLBBWP1', 'MLBB28', 'MLBB88', 'MLBB284'];
+    let isPopuler = populerSkus.includes(kodeSku);
+
+    let htmlPopuler = isPopuler ? `<span class="p-badge">POPULER</span>` : '';
+    let htmlSku = kodeSku ? `<div class="p-sku">${kodeSku}</div>` : '';
+    let htmlCoret = hemat > 0 ? `<span class="p-coret">${teksCoret}</span>` : '';
     let htmlHemat = hemat > 0 ? `<div class="p-hemat">🔥 Hemat Rp ${hemat.toLocaleString('id-ID')}</div>` : '';
 
     lp.innerHTML += `
-      <div class="produk" onclick="tambahKeranjang(${pi})">
+      <div class="produk" data-pi="${pi}" onclick="tambahKeranjang(${pi})">
+        ${htmlPopuler}
         <div class="p-body">
-          <div class="p-nama">${p[0]}</div>
-          ${htmlCoret}
-          <div class="p-harga"><div>${ikon}</div><b>${p[1]}</b></div>
+          ${htmlSku}
+          <div class="p-nama">${namaBersih}</div>
+          <div class="p-harga-wrap">
+            <div class="p-harga"><span>${ikon}</span><b>${p[1]}</b></div>
+            ${htmlCoret}
+          </div>
         </div>
         ${htmlHemat}
       </div>
     `;
   });
 }
-function tambahKeranjang(pi){let p=curItem.p[pi];let key=curItem.n+'|'+p[0];let ada=cart.find(c=>c.key===key);if(ada)ada.qty+=1;else cart.push({key:key,nama:curItem.n+' - '+p[0],harga:toNum(p[1]),qty:1});renderCart()}
+
+function tambahKeranjang(pi) {
+  let p = curItem.p[pi];
+  let key = curItem.n + '|' + p[0];
+  let ada = cart.find(c => c.key === key);
+  if (ada) ada.qty += 1;
+  else cart.push({ key: key, nama: curItem.n + ' - ' + p[0], harga: toNum(p[1]), qty: 1 });
+  renderCart();
+}
+
 function renderCart(){let cl=document.getElementById('cartList');cl.innerHTML='';let total=0;cart.forEach((c,i)=>{total+=c.harga*c.qty;cl.innerHTML+=`<div class="cart-item"><div>${c.nama}<br><b>${fmt(c.harga*c.qty)}</b></div><div class="cart-qty"><button onclick="cartQty(${i},-1)">-</button><b>${c.qty}</b><button onclick="cartQty(${i},1)">+</button><button onclick="hapusCart(${i})" style="background:#333">✕</button></div></div>`});document.getElementById('cartEmpty').style.display=cart.length?'none':'block';document.getElementById('cartTotal').innerText=fmt(total)}
 function cartQty(i,d){cart[i].qty+=d;if(cart[i].qty<=0)cart.splice(i,1);renderCart()}
 function hapusCart(i){cart.splice(i,1);renderCart()}
