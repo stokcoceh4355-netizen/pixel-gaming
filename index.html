@@ -1213,7 +1213,7 @@ gp.style.display = showPop ? 'grid' : 'none';if(showPop){D.forEach((d,idx)=>{if(
 let g=document.getElementById('grid');g.innerHTML='';
 D.forEach((d,idx)=>{if(curCat!=='all'&&d.c!==curCat)return;if(keyword&&!d.n.toLowerCase().includes(keyword.toLowerCase()))return;let imgBig=d.emoji?`<div class="img-big-emoji">${d.emoji}</div>`:`<img src="${d.i}">`;g.innerHTML+=`<div class="card-big" onclick="buka(${idx})"><div class="img-big">${imgBig}</div><b>${d.n}</b><small>${d.b}</small></div>`})}
 function filterCat(c,el){curCat=c;document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));el.classList.add('on');renderGrid()}
-function cari(v){keyword=v;renderGrid()}function buka(idx){curItem=D[idx];tmpQty={};document.getElementById('dJudul').innerText=curItem.n;document.getElementById('dSub').innerText=curItem.b;document.getElementById('qrArea').style.display='none';document.getElementById('bottomBar').style.display='block';tampilProduk(curItem.p);document.getElementById('detail').style.display='block';document.getElementById('lblNama').style.display='none';document.getElementById('inNama').style.display='none';document.getElementById('lblHP').style.display='none';document.getElementById('inHP').style.display='none';if(curItem.c==='voucher'){document.getElementById('lblID').innerText='No WA';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Kode voucher akan dikirim ke WA tersebut, harap masukkan nomor yang terhubung ke WhatsApp';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else if(curItem.c==='pulsa'){document.getElementById('lblID').innerText='Nomor Tujuan';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Orderanmu akan dikirim ke nomor tujuan ini. Pastikan nomor sudah benar & aktif (Telkomsel / Indosat / XL / Axis / Tri / Smartfren).';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else{document.getElementById('lblID').innerText='ID Game';document.getElementById('inID').placeholder='12345678';document.getElementById('ketVoucher').style.display='none';}}
+function cari(v){keyword=v;renderGrid()}function buka(idx){curItem=D[idx];tmpQty={};document.getElementById('dJudul').innerText=curItem.n;document.getElementById('dSub').innerText=curItem.b;document.getElementById('qrArea').style.display='none';document.getElementById('bottomBar').style.display='block';tampilProduk(curItem.p);document.getElementById('detail').style.display='block';document.getElementById('lblNama').style.display='none';document.getElementById('inNama').style.display='none';document.getElementById('lblHP').style.display='none';document.getElementById('inHP').style.display='none';document.getElementById('inHP').value='';if(curItem.c==='voucher'){document.getElementById('lblID').innerText='No WA';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Kode voucher akan dikirim ke WA tersebut, harap masukkan nomor yang terhubung ke WhatsApp';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else if(curItem.c==='pulsa'){document.getElementById('lblID').innerText='Nomor Tujuan';document.getElementById('inID').placeholder='0812xxxx';document.getElementById('ketVoucher').innerHTML='Orderanmu akan dikirim ke nomor tujuan ini. Pastikan nomor sudah benar & aktif (Telkomsel / Indosat / XL / Axis / Tri / Smartfren).';document.getElementById('ketVoucher').style.display='block';document.getElementById('ketVoucher').style.background='rgba(250,204,21,0.12)';document.getElementById('ketVoucher').style.border='1px dashed #FACC15';document.getElementById('ketVoucher').style.color='#FDE68A';}else{document.getElementById('lblID').innerText='ID Game';document.getElementById('inID').placeholder='12345678';document.getElementById('ketVoucher').style.display='none';if(/mobile legends|mlbb|magic chess|life after|genshin/i.test(curItem.n)){document.getElementById('lblHP').innerText='Zone / Server ID';document.getElementById('inHP').placeholder='1234 atau Asia';document.getElementById('lblHP').style.display='block';document.getElementById('inHP').style.display='block';}}}
 function tampilProduk(list) {
   let lp = document.getElementById('listProduk');
   lp.innerHTML = '';
@@ -1437,6 +1437,11 @@ async function kirimEmail() {
     let kode = 'PS-' + Math.floor(1000 + Math.random() * 9000);
     let detail = `${escHtml(lblID)}: <code>${escHtml(id)}</code>`;
 
+    let zoneEl = document.getElementById('inHP');
+    let zone = zoneEl && zoneEl.offsetParent !== null ? zoneEl.value.trim() : '';
+    let lblZone = document.getElementById('lblHP')?.innerText.trim() || 'Zone ID';
+    if (zone) detail += `\n${escHtml(lblZone)}: <code>${escHtml(zone)}</code>`;
+
     let body =
       `<b>Order Baru ${escHtml(kode)}</b>\n` +
       `${isi}\n` +
@@ -1454,6 +1459,7 @@ async function kirimEmail() {
       `&order=${encodeURIComponent(kode)}` +
       `&msg_id=${encodeURIComponent(msgId)}` +
       `&id=${encodeURIComponent(id)}` +
+      `&zone=${encodeURIComponent(zone)}` +
       `&total=${encodeURIComponent(total)}` +
       `&items=${encodeURIComponent(ringkasItems)}`;
 
@@ -1537,6 +1543,9 @@ async function prosesOrderDariUrl() {
 
   let detailUpdate = idTujuan ? `ID Game: <code>${escHtml(idTujuan)}</code>` : '';
 
+  const zoneTujuan = params.get('zone') || '';
+  if (zoneTujuan) detailUpdate += `${detailUpdate ? '\n' : ''}Zone ID: <code>${escHtml(zoneTujuan)}</code>`;
+
   const teksDiproses =
     `<b>Order ${escHtml(orderKode)}</b>\n` +
     `Item: <code>${escHtml(items)}</code>\n` +
@@ -1564,19 +1573,6 @@ async function prosesOrderDariUrl() {
 
   alert(`Order ${orderKode}: Pesanan sudah di proses`);
 }
-
-window.addEventListener('DOMContentLoaded', prosesOrderDariUrl);
-
-setInterval(() => {
-  const slidesEl = document.getElementById('slides');
-  if (!slidesEl) return;
-  slideIdx = (slideIdx + 1) % 3;
-  slidesEl.style.transform = `translateX(-${slideIdx * 100}%)`;
-  document.querySelectorAll('#dots span').forEach((d, i) => {
-    d.classList.toggle('on', i === slideIdx);
-  });
-}, 3000);
-
 
 function tambahBadge(){let jual=["587 RB+","1,4 JT+","400 RB+","49,2 RB+","53 RB+","120 RB+"];document.querySelectorAll('.card').forEach((c,i)=>{if(c.querySelector('.rating-gogo'))return;c.insertAdjacentHTML('afterbegin','<div class="rating-gogo">⭐ 5.0</div>');c.insertAdjacentHTML('beforeend','<div class="terjual-gogo">🔥 '+(jual[i]||"100 RB+")+' Terjual</div>')});}
 let _rg=renderGrid;renderGrid=function(){_rg();tambahBadge();}
