@@ -25,7 +25,7 @@ header{position:sticky;top:0;background:#2E333D;padding:10px 12px;display:flex;g
 .search-bar{display:none;background:#111111;padding:0 12px 12px;border-bottom:1px solid #FACC1533}
 .search-bar input{width:100%;background:#0A0A0A;border:1px solid #262626;border-radius:20px;padding:11px 14px;color:#fff;font-size:14px}
 .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;z-index:400}
-.drawer{position:fixed;top:0;right:0;bottom:0;width:78%;max-width:300px;background:#0A0A0A;z-index:401;transform:translateX(100%);transition:transform .3s ease;padding:16px;border-left:1px solid #FACC1555}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:78%;max-width:300px;background:#2E333d;z-index:401;transform:translateX(100%);transition:transform .3s ease;padding:16px;border-left:1px solid #FACC1555}
 .drawer.open{transform:translateX(0)}
 .drawer-top{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;border-bottom:1px dashed #FACC1555}
 .drawer a{display:flex;justify-content:space-between;align-items:center;padding:15px 4px;border-bottom:1px solid #111111;color:#fff;text-decoration:none;font-size:15px}
@@ -311,7 +311,7 @@ function goCek(){
     p=document.createElement('div');
     p.id='cekPopup';
     p.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
-    p.innerHTML='<div style="background:#16161a;color:#fff;width:100%;max-width:360px;border-radius:12px;padding:18px;font-family:sans-serif;border:1px solid #2c2c35"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b>Cek Transaksi</b><span onclick="document.getElementById(\'cekPopup\').style.display=\'none\'" style="cursor:pointer;font-size:20px;color:#aaa">✕</span></div><div id="hasilCekOrder" style="margin-bottom:10px;font-size:13px;color:#aaa">Silakan masukkan kode order anda</div><input id="inputKodeCek" type="text" placeholder="CONTOH: PS-7256" style="width:100%;box-sizing:border-box;padding:10px;background:#222228;color:#fff;border:1px solid #333;border-radius:8px;margin-bottom:10px;text-transform:uppercase"><button onclick="cariOrderCek()" style="width:100%;padding:11px;border:none;border-radius:8px;background:#f5b041;color:#111;font-weight:bold;cursor:pointer">Cari Pesanan</button></div>';
+    p.innerHTML='<div style="background:#2e333d;color:#fff;width:100%;max-width:360px;border-radius:12px;padding:18px;font-family:sans-serif;border:1px solid #2c2c35"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><b>Cek Transaksi</b><span onclick="document.getElementById(\'cekPopup\').style.display=\'none\'" style="cursor:pointer;font-size:20px;color:#aaa">✕</span></div><div id="hasilCekOrder" style="margin-bottom:10px;font-size:13px;color:#aaa">Silakan masukkan kode order anda</div><input id="inputKodeCek" type="text" placeholder="CONTOH: PS-7256" style="width:100%;box-sizing:border-box;padding:10px;background:#222228;color:#fff;border:1px solid #333;border-radius:8px;margin-bottom:10px;text-transform:uppercase"><button onclick="cariOrderCek()" style="width:100%;padding:11px;border:none;border-radius:8px;background:#f5b041;color:#111;font-weight:bold;cursor:pointer">Cari Pesanan</button></div>';
     document.body.appendChild(p)
   }else{
     let o=document.getElementById('hasilCekOrder');
@@ -396,7 +396,7 @@ function goMasuk() {
     p.id = 'masukPopup';
     p.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px';
     p.innerHTML = `
-      <div style="background:#16161a;color:#fff;width:100%;max-width:360px;border-radius:14px;padding:18px;font-family:sans-serif;border:1px solid #2c2c35;box-shadow:0 12px 30px rgba(0,0,0,.6)">
+      <div style="background:#2e333d;color:#fff;width:100%;max-width:360px;border-radius:14px;padding:18px;font-family:sans-serif;border:1px solid #2c2c35;box-shadow:0 12px 30px rgba(0,0,0,.6)">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <b style="font-size:16px;color:#f5b041">Masuk / Daftar Akun</b>
           <span onclick="document.getElementById('masukPopup').style.display='none'" style="cursor:pointer;font-size:20px;color:#aaa">✕</span>
