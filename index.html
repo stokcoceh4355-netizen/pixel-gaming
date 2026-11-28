@@ -1368,6 +1368,35 @@ function tampilQR() {
 const BOT_TOKEN = "9244710616:AAEdc6vwAvD395ASwxa5Zw0Nsp6XBPRcydM";
 const CHAT_ID = "1368503663";
 
+const SIM_STORAGE_KEY = 'pixel_gaming_orders_v1';
+
+function bacaOrdersStorage() {
+  try {
+    const raw = localStorage.getItem(SIM_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function simpanOrdersStorage(list) {
+  try {
+    localStorage.setItem(SIM_STORAGE_KEY, JSON.stringify(list));
+  } catch (e) {}
+}
+
+function upsertOrderStorage(orderObj) {
+  const list = bacaOrdersStorage();
+  const idx = list.findIndex((item) => item.order === orderObj.order);
+  if (idx >= 0) {
+    list[idx] = { ...list[idx], ...orderObj };
+  } else {
+    list.unshift(orderObj);
+  }
+  simpanOrdersStorage(list);
+}
+
 function escHtml(str) {
   return String(str ?? '')
     .replace(/&/g, '&amp;')
@@ -1487,7 +1516,7 @@ async function kirimEmail() {
       throw new Error(data.description || 'Gagal mengirim ke Telegram');
     }
 
-    const msgId = data.result?.message_id;
+    const msgId = data.result?.message_id ?? '';
     if (msgId) {
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageReplyMarkup`, {
         method: 'POST',
@@ -1508,6 +1537,17 @@ async function kirimEmail() {
         })
       });
     }
+
+    upsertOrderStorage({
+      order: kode,
+      msg_id: msgId,
+      id,
+      zone,
+      total,
+      items: ringkasItems,
+      status: 'Belum Diproses',
+      updatedAt: new Date().toISOString()
+    });
 
     if (btnKonfirmasi) {
       btnKonfirmasi.disabled = true;
@@ -1536,31 +1576,52 @@ async function prosesOrderDariUrl() {
   if (params.get('sim') !== '1') return;
 
   const orderKode = params.get('order') || '-';
-  const msgId = params.get('msg_id');
+  const msgId = params.get('msg_id') || '';
   const idTujuan = params.get('id') || '';
-  const total = Number(params.get('total') || 0);
-  const items = params.get('items') || '-';
-
-  let detailUpdate = idTujuan ? `ID Game: <code>${escHtml(idTujuan)}</code>` : '';
-
   const zoneTujuan = params.get('zone') || '';
-  if (zoneTujuan) detailUpdate += `${detailUpdate ? '\n' : ''}Zone ID: <code>${escHtml(zoneTujuan)}</code>`;
+  const totalParam = params.get('total');
+  const itemsParam = params.get('items');
+
+  const tersimpan = bacaOrdersStorage().find((o) => o.order === orderKode) || {};
+  const idFinal = idTujuan || tersimpan.id || '';
+  const zoneFinal = zoneTujuan || tersimpan.zone || '';
+  const totalFinal = totalParam !== null ? Number(totalParam || 0) : Number(tersimpan.total || 0);
+  const itemsFinal = itemsParam || tersimpan.items || '-';
+  const msgIdFinal = msgId || tersimpan.msg_id || '';
+
+  const statusText = 'Pesanan sudah di proses';
+
+  upsertOrderStorage({
+    order: orderKode,
+    msg_id: msgIdFinal,
+    id: idFinal,
+    zone: zoneFinal,
+    total: totalFinal,
+    items: itemsFinal,
+    status: statusText,
+    processedAt: new Date().toISOString()
+  });
+
+  let detailUpdate = idFinal ? `ID Game: <code>${escHtml(idFinal)}</code>` : '';
+  if (zoneFinal) {
+    detailUpdate += `${detailUpdate ? '\n' : ''}Zone ID: <code>${escHtml(zoneFinal)}</code>`;
+  }
 
   const teksDiproses =
     `<b>Order ${escHtml(orderKode)}</b>\n` +
-    `Item: <code>${escHtml(items)}</code>\n` +
-    `Total: <b>${escHtml(fmt(total))}</b>\n` +
+    `Item: <code>${escHtml(itemsFinal)}</code>\n` +
+    `Total: <b>${escHtml(typeof fmt === 'function' ? fmt(totalFinal) : totalFinal)}</b>\n` +
     `${detailUpdate ? detailUpdate + '\n' : ''}` +
-    `Status: ✅ Pesanan sudah di proses`;
+    `Status: ✅ ${statusText}`;
 
-  if (msgId && typeof BOT_TOKEN !== 'undefined' && typeof CHAT_ID !== 'undefined') {
+  if (msgIdFinal && typeof BOT_TOKEN !== 'undefined' && BOT_TOKEN && typeof CHAT_ID !== 'undefined' && CHAT_ID) {
     try {
       await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/editMessageText`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           chat_id: CHAT_ID,
-          message_id: Number(msgId),
+          message_id: Number(msgIdFinal),
           text: teksDiproses,
           parse_mode: 'HTML',
           reply_markup: { inline_keyboard: [] }
@@ -1571,7 +1632,13 @@ async function prosesOrderDariUrl() {
     }
   }
 
-  alert(`Order ${orderKode}: Pesanan sudah di proses`);
+  alert(`Order ${orderKode}: ${statusText}`);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', prosesOrderDariUrl);
+} else {
+  prosesOrderDariUrl();
 }
 
 function tambahBadge(){let jual=["587 RB+","1,4 JT+","400 RB+","49,2 RB+","53 RB+","120 RB+"];document.querySelectorAll('.card').forEach((c,i)=>{if(c.querySelector('.rating-gogo'))return;c.insertAdjacentHTML('afterbegin','<div class="rating-gogo">⭐ 5.0</div>');c.insertAdjacentHTML('beforeend','<div class="terjual-gogo">🔥 '+(jual[i]||"100 RB+")+' Terjual</div>')});}
